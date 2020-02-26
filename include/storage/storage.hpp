@@ -113,7 +113,7 @@ namespace storage {
           return;
         }
       } else {
-        data_indices.resize(i + CAPACITY_INCREMENT, {});
+        data_indices.resize(i + 1, {});
       }
 
       auto data_index = size++;

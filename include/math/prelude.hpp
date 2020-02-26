@@ -23,4 +23,4 @@ namespace math {
   using Matrix2d = Matrix<double, 2>;
   using Matrix3d = Matrix<double, 3>;
   using Matrix4d = Matrix<double, 4>;
-}
+} // namespace math

@@ -19,20 +19,6 @@ namespace storage {
     }
   };
 
-  template <std::size_t Index, typename AosoaType, typename T, typename S>
-  STORAGE_FORCE_INLINE S &get_from_slice(const AosoaType &data, std::size_t i) {
-    T *ptr = &Cabana::slice<Index, AosoaType>(data)(i, 0);
-    S *vptr = (S *)ptr;
-    return *vptr;
-  }
-
-  template <std::size_t Index, typename AosoaType, typename T, typename S>
-  STORAGE_FORCE_INLINE void set_to_slice(AosoaType &data, std::size_t i, const S &value) {
-    T *ptr = &Cabana::slice<Index, AosoaType>(data)(i, 0);
-    S *vptr = (S *)ptr;
-    *vptr = value;
-  }
-
   template <typename T, int dim>
   struct TypeTransform<math::Vector<T, dim>> {
     using Type = T[4];
@@ -41,12 +27,20 @@ namespace storage {
 
     template <std::size_t Index, typename AosoaType>
     static STORAGE_FORCE_INLINE From &get(const AosoaType &data, std::size_t i) {
-      return get_from_slice<Index, AosoaType, T, From>(data, i);
+      auto slice = Cabana::slice<Index, AosoaType>(data);
+      auto offset = i & (slice.extent(1) - 1); // i % slice.extent(1)
+      T *ptr = &slice(i - offset, offset);
+      From *vptr = (From *)ptr;
+      return *vptr;
     }
 
     template <std::size_t Index, typename AosoaType>
     static STORAGE_FORCE_INLINE void set(AosoaType &data, std::size_t i, const From &value) {
-      set_to_slice<Index, AosoaType, T, From>(data, i, value);
+      auto slice = Cabana::slice<Index, AosoaType>(data);
+      auto offset = i & (slice.extent(1) - 1);
+      T *ptr = &slice(i - offset, offset);
+      From *vptr = (From *)ptr;
+      *vptr = value;
     }
   };
 
@@ -58,12 +52,20 @@ namespace storage {
 
     template <std::size_t Index, typename AosoaType>
     static STORAGE_FORCE_INLINE From &get(const AosoaType &data, std::size_t i) {
-      return get_from_slice<Index, AosoaType, T, From>(data, i);
+      auto slice = Cabana::slice<Index, AosoaType>(data);
+      auto offset = i & (slice.extent(1) - 1);
+      T *ptr = &slice(i - offset, offset * dim);
+      From *vptr = (From *)ptr;
+      return *vptr;
     }
 
     template <std::size_t Index, typename AosoaType>
     static STORAGE_FORCE_INLINE void set(AosoaType &data, std::size_t i, const From &value) {
-      set_to_slice<Index, AosoaType, T, From>(data, i, value);
+      auto slice = Cabana::slice<Index, AosoaType>(data);
+      auto offset = i & (slice.extent(1) - 1);
+      T *ptr = &slice(i - offset, offset * dim);
+      From *vptr = (From *)ptr;
+      *vptr = value;
     }
   };
 } // namespace storage
