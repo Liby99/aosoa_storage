@@ -1,12 +1,13 @@
 #pragma once
 
-#include <Cabana_Core.hpp>
 #include <optional>
 #include <vector>
 
+#include <Cabana_Core.hpp>
+
 #include "./storage_utils.hpp"
 
-namespace AosoaStorage {
+namespace storage {
 
 template <class ExSpace, class MemSpace, std::size_t BinSize, typename... Types>
 struct Storage {
@@ -60,9 +61,9 @@ struct Storage {
 
 private:
   // Instance fields
+  CabanaAosoa data;
   std::vector<std::size_t> global_indices;
   std::vector<std::optional<std::size_t>> data_indices;
-  CabanaAosoa data;
   std::size_t size;
 
   // Constants for resource management

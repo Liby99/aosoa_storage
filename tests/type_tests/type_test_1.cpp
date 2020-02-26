@@ -1,9 +1,16 @@
-#include "aosoa_storage/storage.hpp"
+#include "storage/prelude.hpp"
+#include "math/prelude.hpp"
 
-using namespace AosoaStorage;
+using namespace storage;
+
+using namespace math;
 
 void type_1() {
   Storage<Kokkos::Serial, Kokkos::HostSpace, 4, int, int, float> store;
+}
+
+void type_2() {
+  Storage<Kokkos::Serial, Kokkos::HostSpace, 4, Vector<float, 3>> store;
 }
 
 int main() {

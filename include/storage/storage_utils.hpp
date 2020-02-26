@@ -1,9 +1,10 @@
 #pragma once
 
-#include <Cabana_Core.hpp>
 #include <tuple>
 
-namespace AosoaStorage {
+#include <Cabana_Core.hpp>
+
+namespace storage {
 
 template <typename... Types>
 using CabanaDataTypes = Cabana::MemberTypes<Types...>;
