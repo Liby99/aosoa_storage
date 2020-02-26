@@ -4,6 +4,8 @@
 
 #include <Cabana_Core.hpp>
 
+#include "./type_transform.hpp"
+
 namespace storage {
 
   template <typename... Types>
@@ -66,8 +68,9 @@ namespace storage {
   struct RefTupleExtractor<Index, T, Types...> {
     template <typename AosoaType>
     static Tuple<T &, Types &...> get(AosoaType &data, std::size_t i) {
-      return std::tuple_cat(std::tie(Cabana::slice<Index, AosoaType>(data)(i)),
-                            RefTupleExtractor<Index + 1, Types...>::get(data, i));
+      T &hd = TypeTransform<T>::template get<Index, AosoaType>(data, i);
+      auto rs = RefTupleExtractor<Index + 1, Types...>::get(data, i);
+      return std::tuple_cat(std::tie(hd), rs);
     }
   };
 

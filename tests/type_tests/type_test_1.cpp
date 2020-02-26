@@ -11,6 +11,7 @@ void type_1() {
 
 void type_2() {
   Storage<Kokkos::Serial, Kokkos::HostSpace, 4, Vector<float, 3>> store;
+  auto elem = store.get(10);
 }
 
 int main() {

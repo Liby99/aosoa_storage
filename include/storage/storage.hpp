@@ -14,7 +14,7 @@ namespace storage {
   struct Storage {
 
     // Type definitions
-    using CabanaDataTypes = Cabana::MemberTypes<Types...>;
+    using CabanaDataTypes = Cabana::MemberTypes<typename TypeTransform<Types>::Type ...>;
     using KokkosDeviceType = Kokkos::Device<ExSpace, MemSpace>;
     using CabanaTuple = Cabana::Tuple<CabanaDataTypes>;
     using CabanaAosoa = Cabana::AoSoA<CabanaDataTypes, KokkosDeviceType, BinSize>;
@@ -48,6 +48,7 @@ namespace storage {
           return RefTupleExtractor::get(data, data_index.value());
         }
       }
+      return {};
     }
 
     RefTuple get_unchecked(std::size_t i) {
