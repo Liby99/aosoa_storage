@@ -5,6 +5,8 @@
 
 #include <Cabana_Core.hpp>
 
+#include "./joined_storage.hpp"
+#include "./storage_fields.hpp"
 #include "./storage_utils.hpp"
 #include "./type_transform.hpp"
 
@@ -220,6 +222,11 @@ namespace storage {
       other.size = size;
       other.data_indices = std::vector<std::optional<std::size_t>>(data_indices);
       other.global_indices = std::vector<std::size_t>(global_indices);
+    }
+
+    template <typename... OtherStorages>
+    JoinedStorage<ExSpace, Self, OtherStorages...> join(OtherStorages &... other_storages) {
+      return JoinedStorage<ExSpace, Self, OtherStorages...>(*this, other_storages...);
     }
 
   private:

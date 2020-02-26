@@ -21,9 +21,13 @@ namespace math {
 
     explicit Vector(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
 
-    T& operator() (int d) { return data[d]; }
+    T &operator()(int d) {
+      return data[d];
+    }
 
-    const T& operator() (int d) const { return data[d]; }
+    const T &operator()(int d) const {
+      return data[d];
+    }
 
     Vector<T, dim> operator+(const Vector<T, dim> &rhs) const {
       return Vector<T, dim>(x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w);

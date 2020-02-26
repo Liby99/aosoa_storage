@@ -85,5 +85,6 @@ void test_2() {
 int main() {
   Kokkos::initialize();
   test_1();
+  test_2();
   Kokkos::finalize();
 }
