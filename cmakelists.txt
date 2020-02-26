@@ -5,9 +5,10 @@ cmake_minimum_required(VERSION 3.10)
 ##############################################################################
 
 # Basic project setup
-project(storage-utils CXX)
+project(aosoa_storage CXX)
 
 # CXX setup
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 # CMake Modules
@@ -43,10 +44,10 @@ add_subdirectory(${Cabana_SOURCE_DIR} ${Cabana_BINARY_DIR})
 # Core Library                                                               #
 ##############################################################################
 
-set(DEPENDENCIES Kokkos::kokkos cabanacore)
 add_library(aosoa_storage INTERFACE)
-target_include_directories(aosoa_storage INTERFACE include/)
-target_link_libraries(aosoa_storage INTERFACE ${DEPENDENCIES})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(aosoa_storage INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+target_link_libraries(aosoa_storage INTERFACE Kokkos::kokkos cabanacore)
 
 ##############################################################################
 # Tests                                                                      #
@@ -59,5 +60,6 @@ foreach(test_file ${test_files})
   get_filename_component(test_target ${test_file} NAME_WE)
   add_executable(${test_target} ${test_file})
   target_include_directories(${test_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+  target_link_libraries(${test_target} PUBLIC Kokkos::kokkos cabanacore)
   add_test(${test_target} ${test_target})
 endforeach()
