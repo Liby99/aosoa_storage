@@ -1,0 +1,63 @@
+cmake_minimum_required(VERSION 3.10)
+
+##############################################################################
+# Settings                                                                   #
+##############################################################################
+
+# Basic project setup
+project(storage-utils CXX)
+
+# CXX setup
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+
+# CMake Modules
+include(cmake/download_project.cmake)
+
+##############################################################################
+# External Libraries                                                         #
+##############################################################################
+
+# Kokkos
+download_project(
+  PROJ Kokkos
+  GIT_REPOSITORY https://github.com/kokkos/kokkos.git
+  GIT_TAG 3.0.00
+  UPDATE_DISCONNECTED 1
+)
+set(Kokkos_ENABLE_SERIAL On)
+add_subdirectory(${Kokkos_SOURCE_DIR} ${Kokkos_BINARY_DIR})
+set(Kokkos_DEVICES
+  SERIAL
+  # OPENMP
+)
+
+# Cabana
+download_project(
+  PROJ Cabana
+  GIT_REPOSITORY https://github.com/Liby99/Cabana # Forked to get rid of find_package(Kokkos)
+  UPDATE_DISCONNECTED 1
+)
+add_subdirectory(${Cabana_SOURCE_DIR} ${Cabana_BINARY_DIR})
+
+##############################################################################
+# Core Library                                                               #
+##############################################################################
+
+set(DEPENDENCIES Kokkos::kokkos cabanacore)
+add_library(aosoa_storage INTERFACE)
+target_include_directories(aosoa_storage INTERFACE include/)
+target_link_libraries(aosoa_storage INTERFACE ${DEPENDENCIES})
+
+##############################################################################
+# Tests                                                                      #
+##############################################################################
+
+# Testing setup
+enable_testing()
+file(GLOB_RECURSE test_files "tests/**.cpp")
+foreach(test_file ${test_files})
+  get_filename_component(test_target ${test_file} NAME_WE)
+  add_executable(${test_target} ${test_file})
+  target_include_directories(${test_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+  add_test(${test_target} ${test_target})
+endforeach()
