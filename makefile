@@ -1,15 +1,17 @@
-.PHONY: cmake clean format
+.PHONY: configure clean format
 
 BUILD_DIR := build
 
-all: $(BUILD_DIR)/CMakeCache.txt
+BUILD_TYPE := Debug
+
+all: $(BUILD_DIR)/Makefile
 	pushd $(BUILD_DIR); make
 
-cmake: $(BUILD_DIR)
-	pushd $(BUILD_DIR); cmake -DCMAKE_BUILD_TYPE=Release ..
-
 $(BUILD_DIR)/Makefile: ./cmakelists.txt | $(BUILD_DIR)
-	cmake
+	make configure
+
+configure: $(BUILD_DIR)
+	pushd $(BUILD_DIR); cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) ..
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
