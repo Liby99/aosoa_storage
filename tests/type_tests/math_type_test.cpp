@@ -1,5 +1,5 @@
-#include <assert.h>
 #include "math/prelude.hpp"
+#include <assert.h>
 
 using namespace math;
 

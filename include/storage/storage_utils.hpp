@@ -18,34 +18,6 @@ namespace storage {
   using Tuple = std::tuple<Types...>;
 
   template <std::size_t Index, typename... Types>
-  struct TupleParserBase {
-    template <typename... FullTypes>
-    static STORAGE_FORCE_INLINE void to_cabana_base(
-      const Tuple<FullTypes...> &source,
-      CabanaTuple<FullTypes...> &target
-    ) {}
-  };
-
-  template <std::size_t Index, typename T, typename... Types>
-  struct TupleParserBase<Index, T, Types...> {
-    template <typename... FullTypes>
-    static STORAGE_FORCE_INLINE void to_cabana_base(const Tuple<FullTypes...> &source,
-                               CabanaTuple<FullTypes...> &target) {
-      Cabana::get<Index>(target) = std::get<Index>(source);
-      TupleParserBase<Index + 1, Types...>::to_cabana_base(source, target);
-    }
-  };
-
-  template <typename... Types>
-  struct TupleParser : public TupleParserBase<0, Types...> {
-    static STORAGE_FORCE_INLINE CabanaTuple<Types...> to_cabana(const Tuple<Types...> &source) {
-      CabanaTuple<Types...> target;
-      TupleParserBase<0, Types...>::to_cabana_base(source, target);
-      return target;
-    }
-  };
-
-  template <std::size_t Index, typename... Types>
   struct RefTupleExtractor {
     template <typename AosoaType>
     static STORAGE_FORCE_INLINE Tuple<> get(AosoaType &data, std::size_t i) {

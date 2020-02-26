@@ -37,8 +37,6 @@ namespace storage {
     template <std::size_t Index>
     using OptionalRefAt = std::optional<std::reference_wrapper<TypeAt<Index>>>;
 
-    using TupleParser = TupleParser<Types...>;
-
     using RefTupleExtractor = RefTupleExtractor<0, Types...>;
 
     using RefTupleUpdator = RefTupleUpdator<0, Types...>;
@@ -141,15 +139,11 @@ namespace storage {
 
     template <std::size_t Index>
     void fill(TypeAt<Index> component) {
-      par_each(KOKKOS_LAMBDA(int, auto data) {
-        std::get<Index>(data) = component;
-      });
+      par_each(KOKKOS_LAMBDA(int, auto data) { std::get<Index>(data) = component; });
     }
 
     void fill(Types... components) {
-      par_each(KOKKOS_LAMBDA(int, auto data) {
-        RefTupleUpdator::set(data, components...);
-      });
+      par_each(KOKKOS_LAMBDA(int, auto data) { RefTupleUpdator::set(data, components...); });
     }
 
     bool update(std::size_t i, Types... components) {
