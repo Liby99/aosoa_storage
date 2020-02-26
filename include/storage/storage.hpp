@@ -14,25 +14,36 @@ namespace storage {
   struct Storage {
 
     // Type definitions
-    using CabanaDataTypes = Cabana::MemberTypes<typename TypeTransform<Types>::Type ...>;
-    using KokkosDeviceType = Kokkos::Device<ExSpace, MemSpace>;
-    using CabanaTuple = Cabana::Tuple<CabanaDataTypes>;
-    using CabanaAosoa = Cabana::AoSoA<CabanaDataTypes, KokkosDeviceType, BinSize>;
-    using Tuple = std::tuple<Types...>;
-    using RefTuple = std::tuple<Types &...>;
-    using ConstRefTuple = std::tuple<const Types &...>;
     using Self = Storage<ExSpace, MemSpace, BinSize, Types...>;
 
-    // Helper types
-    using TupleParser = TupleParser<Types...>;
-    using RefTupleExtractor = RefTupleExtractor<0, Types...>;
-    using RefTupleUpdator = RefTupleUpdator<0, Types...>;
+    using CabanaDataTypes = Cabana::MemberTypes<typename TypeTransform<Types>::Type...>;
 
-    // Type at a particular index of Types...
+    using KokkosDeviceType = Kokkos::Device<ExSpace, MemSpace>;
+
+    using CabanaTuple = Cabana::Tuple<CabanaDataTypes>;
+
+    using CabanaAosoa = Cabana::AoSoA<CabanaDataTypes, KokkosDeviceType, BinSize>;
+
+    using Tuple = std::tuple<Types...>;
+
+    using RefTuple = std::tuple<Types &...>;
+
+    using ConstRefTuple = std::tuple<const Types &...>;
+
+    using OptionalRefTuple = std::optional<RefTuple>;
+
     template <std::size_t Index>
     using TypeAt = typename ExtractTypeAt<Index, Types...>::Type;
 
-    // Constants
+    template <std::size_t Index>
+    using OptionalRefAt = std::optional<std::reference_wrapper<TypeAt<Index>>>;
+
+    using TupleParser = TupleParser<Types...>;
+
+    using RefTupleExtractor = RefTupleExtractor<0, Types...>;
+
+    using RefTupleUpdator = RefTupleUpdator<0, Types...>;
+
     static constexpr std::size_t N = sizeof...(Types);
 
     Storage() : Storage(DEFAULT_CAPACITY) {}
@@ -59,6 +70,31 @@ namespace storage {
     ConstRefTuple get_unchecked_const(std::size_t i) const {
       std::optional<std::size_t> data_index = data_indices[i];
       return RefTupleExtractor::get(data, data_index.value());
+    }
+
+    template <std::size_t Index>
+    OptionalRefAt<Index> get_component(std::size_t i) {
+      if (i < data_indices.size()) {
+        std::optional<std::size_t> data_index = data_indices[i];
+        if (data_index.has_value()) {
+          TypeAt<Index> &res = TypeTransform<TypeAt<Index>>::template get<Index, CabanaAosoa>(
+              data, data_index.value());
+          return OptionalRefAt<Index>{res};
+        }
+      }
+      return {};
+    }
+
+    template <std::size_t Index>
+    TypeAt<Index> &get_component_unchecked(std::size_t i) {
+      auto data_index = data_indices[i];
+      return TypeTransform<TypeAt<Index>>::template get<Index, CabanaAosoa>(data, data_index.value());
+    }
+
+    template <std::size_t Index>
+    const TypeAt<Index> &get_component_unchecked_const(std::size_t i) const {
+      auto data_index = data_indices[i];
+      return TypeTransform<TypeAt<Index>>::template get<Index, CabanaAosoa>(data, data_index.value());
     }
 
   private:

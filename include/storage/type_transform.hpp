@@ -9,7 +9,7 @@ namespace storage {
     using Type = T;
 
     template <std::size_t Index, typename AosoaType>
-    static T &get(AosoaType &data, std::size_t i) {
+    static T &get(const AosoaType &data, std::size_t i) {
       return Cabana::slice<Index, AosoaType>(data)(i);
     }
   };
@@ -21,9 +21,9 @@ namespace storage {
     using From = math::Vector<T, dim>;
 
     template <std::size_t Index, typename AosoaType>
-    static math::Vector<T, dim> &get(AosoaType &data, std::size_t i) {
+    static math::Vector<T, dim> &get(const AosoaType &data, std::size_t i) {
       T *ptr = &Cabana::slice<Index, AosoaType>(data)(i, 0);
-      math::Vector<T, dim> *vptr = (math::Vector<T, dim> *) ptr;
+      math::Vector<T, dim> *vptr = (math::Vector<T, dim> *)ptr;
       return *vptr;
     }
   };
@@ -35,9 +35,9 @@ namespace storage {
     using From = math::Matrix<T, 2>;
 
     template <std::size_t Index, typename AosoaType>
-    static From &get(AosoaType &data, std::size_t i) {
+    static From &get(const AosoaType &data, std::size_t i) {
       T *ptr = &Cabana::slice<Index, AosoaType>(data)(i, 0);
-      From *vptr = (From *) ptr;
+      From *vptr = (From *)ptr;
       return *vptr;
     }
   };
@@ -49,9 +49,9 @@ namespace storage {
     using From = math::Matrix<T, 3>;
 
     template <std::size_t Index, typename AosoaType>
-    static From &get(AosoaType &data, std::size_t i) {
+    static From &get(const AosoaType &data, std::size_t i) {
       T *ptr = &Cabana::slice<Index, AosoaType>(data)(i, 0);
-      From *vptr = (From *) ptr;
+      From *vptr = (From *)ptr;
       return *vptr;
     }
   };
@@ -63,9 +63,9 @@ namespace storage {
     using From = math::Matrix<T, 4>;
 
     template <std::size_t Index, typename AosoaType>
-    static From &get(AosoaType &data, std::size_t i) {
+    static From &get(const AosoaType &data, std::size_t i) {
       T *ptr = &Cabana::slice<Index, AosoaType>(data)(i, 0);
-      From *vptr = (From *) ptr;
+      From *vptr = (From *)ptr;
       return *vptr;
     }
   };
