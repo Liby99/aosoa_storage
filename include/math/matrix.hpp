@@ -7,4 +7,4 @@ namespace math {
   struct Matrix {
     Vector<T, dim> data[dim];
   };
-}
+} // namespace math

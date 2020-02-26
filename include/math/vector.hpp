@@ -6,7 +6,9 @@ namespace math {
   struct Vector {
     union {
       T data[4];
-      struct { T x, y, z, w; };
+      struct {
+        T x, y, z, w;
+      };
     };
 
     explicit Vector() : x(0), y(0), z(0), w(0) {}
@@ -19,16 +21,16 @@ namespace math {
 
     explicit Vector(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
 
-    Vector<T, dim> operator +(const Vector<T, dim> &rhs) const {
+    Vector<T, dim> operator+(const Vector<T, dim> &rhs) const {
       return Vector<T, dim>(x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w);
     }
 
-    Vector<T, dim> operator -(const Vector<T, dim> &rhs) const {
+    Vector<T, dim> operator-(const Vector<T, dim> &rhs) const {
       return Vector<T, dim>(x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w);
     }
 
-    Vector<T, dim> operator *(T s) const {
+    Vector<T, dim> operator*(T s) const {
       return Vector<T, dim>(x * s, y * s, z * s, w * s);
     }
   };
-}
+} // namespace math

@@ -1,0 +1,6 @@
+Language: Cpp
+AlwaysBreakTemplateDeclarations: true
+NamespaceIndentation: All
+BinPackParameters: false
+ColumnLimit: 100
+AllowShortFunctionsOnASingleLine: Empty

@@ -1,5 +1,5 @@
-#include "storage/prelude.hpp"
 #include "math/prelude.hpp"
+#include "storage/prelude.hpp"
 
 using namespace storage;
 
@@ -16,5 +16,6 @@ void type_2() {
 int main() {
   Kokkos::initialize();
   type_1();
+  type_2();
   Kokkos::finalize();
 }
