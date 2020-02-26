@@ -19,28 +19,17 @@ namespace storage {
 
   template <std::size_t Index, typename... Types>
   struct TupleParserBase {
-
     template <typename... FullTypes>
-    static Tuple<> to_std(CabanaTuple<FullTypes...> &t) {
-      return Tuple<>();
-    }
-
-    template <typename... FullTypes>
-    static void to_cabana_base(const Tuple<FullTypes...> &source,
-                               CabanaTuple<FullTypes...> &target) {}
+    static STORAGE_FORCE_INLINE void to_cabana_base(
+      const Tuple<FullTypes...> &source,
+      CabanaTuple<FullTypes...> &target
+    ) {}
   };
 
   template <std::size_t Index, typename T, typename... Types>
   struct TupleParserBase<Index, T, Types...> {
-
     template <typename... FullTypes>
-    static Tuple<T, Types...> to_std(CabanaTuple<FullTypes...> &t) {
-      return std::tuple_cat(std::tie(Cabana::get<Index>(t)),
-                            TupleParserBase<Index + 1, Types...>::to_std(t));
-    }
-
-    template <typename... FullTypes>
-    static void to_cabana_base(const Tuple<FullTypes...> &source,
+    static STORAGE_FORCE_INLINE void to_cabana_base(const Tuple<FullTypes...> &source,
                                CabanaTuple<FullTypes...> &target) {
       Cabana::get<Index>(target) = std::get<Index>(source);
       TupleParserBase<Index + 1, Types...>::to_cabana_base(source, target);
@@ -49,7 +38,7 @@ namespace storage {
 
   template <typename... Types>
   struct TupleParser : public TupleParserBase<0, Types...> {
-    static CabanaTuple<Types...> to_cabana(const Tuple<Types...> &source) {
+    static STORAGE_FORCE_INLINE CabanaTuple<Types...> to_cabana(const Tuple<Types...> &source) {
       CabanaTuple<Types...> target;
       TupleParserBase<0, Types...>::to_cabana_base(source, target);
       return target;
@@ -59,7 +48,7 @@ namespace storage {
   template <std::size_t Index, typename... Types>
   struct RefTupleExtractor {
     template <typename AosoaType>
-    static Tuple<> get(AosoaType &data, std::size_t i) {
+    static STORAGE_FORCE_INLINE Tuple<> get(AosoaType &data, std::size_t i) {
       return std::tie();
     }
   };
@@ -67,7 +56,7 @@ namespace storage {
   template <std::size_t Index, typename T, typename... Types>
   struct RefTupleExtractor<Index, T, Types...> {
     template <typename AosoaType>
-    static Tuple<T &, Types &...> get(AosoaType &data, std::size_t i) {
+    static STORAGE_FORCE_INLINE Tuple<T &, Types &...> get(AosoaType &data, std::size_t i) {
       T &hd = TypeTransform<T>::template get<Index, AosoaType>(data, i);
       auto rs = RefTupleExtractor<Index + 1, Types...>::get(data, i);
       return std::tuple_cat(std::tie(hd), rs);
@@ -77,15 +66,30 @@ namespace storage {
   template <std::size_t Index, typename... Types>
   struct RefTupleUpdator {
     template <typename... FullTypes>
-    static void set(Tuple<FullTypes &...> &t, Types... ts) {}
+    static STORAGE_FORCE_INLINE void set(Tuple<FullTypes &...> &t, Types... ts) {}
   };
 
   template <std::size_t Index, typename T, typename... Types>
   struct RefTupleUpdator<Index, T, Types...> {
     template <typename... FullTypes>
-    static void set(Tuple<FullTypes &...> &t, T c, Types... ts) {
+    static STORAGE_FORCE_INLINE void set(Tuple<FullTypes &...> &t, T c, Types... ts) {
       std::get<Index>(t) = c;
       RefTupleUpdator<Index + 1, Types...>::set(t, ts...);
+    }
+  };
+
+  template <std::size_t Index, typename... Types>
+  struct DataUpdator {
+    template <typename AosoaType>
+    static STORAGE_FORCE_INLINE void set(AosoaType &data, std::size_t i, Types... ts) {}
+  };
+
+  template <std::size_t Index, typename T, typename... Types>
+  struct DataUpdator<Index, T, Types...> {
+    template <typename AosoaType>
+    static STORAGE_FORCE_INLINE void set(AosoaType &data, std::size_t i, T t, Types... ts) {
+      TypeTransform<T>::template set<Index, AosoaType>(data, i, t);
+      DataUpdator<Index + 1, Types...>::set(data, i, ts...);
     }
   };
 

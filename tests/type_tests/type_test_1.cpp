@@ -11,17 +11,16 @@ void type_1() {
 
 void type_2() {
   Storage<Kokkos::Serial, Kokkos::HostSpace, 4, Vector<float, 3>> store;
-  auto elem = store.get(10);
-  auto elem_re = store.get_unchecked(10);
-  auto elem_re_2 = store.get_unchecked_const(10);
-  auto comp_0 = store.get_component<0>(10);
-  auto comp_0_re = store.get_component_unchecked<0>(10);
-  const auto comp_0_re_2 = store.get_component_unchecked_const<0>(10);
+}
+
+void type_3() {
+  Storage<Kokkos::Serial, Kokkos::HostSpace, 4, Vector<float, 3>, Matrix<float, 4>> store;
 }
 
 int main() {
   Kokkos::initialize();
   type_1();
   type_2();
+  type_3();
   Kokkos::finalize();
 }
