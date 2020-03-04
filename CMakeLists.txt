@@ -7,9 +7,9 @@ project(aosoa_storage CXX)
 # Options                                                                    #
 ##############################################################################
 
-option(STORAGE_ENABLE_BENCHMARK "Enable benchmark" On)
+option(STORAGE_ENABLE_TEST "Compile Tests" On)
 
-option(STORAGE_ENABLE_TEST "Enable Testing" On)
+option(STORAGE_ENABLE_BENCHMARK "Compile Benchmarks" On)
 
 option(STORAGE_ENABLE_OPENMP "Enable OpenMP" On)
 
@@ -70,6 +70,14 @@ add_subdirectory(${Cabana_SOURCE_DIR} ${Cabana_BINARY_DIR})
 # Core Library                                                               #
 ##############################################################################
 
+# Set compile definitions for C
+if(${STORAGE_ENABLE_CUDA})
+  add_compile_definitions(STORAGE_ENABLED_CUDA)
+elseif(${STORAGE_ENABLE_OPENMP})
+  add_compile_definitions(STORAGE_ENABLED_OPENMP)
+endif()
+
+# Setup the library
 add_library(aosoa_storage INTERFACE)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(aosoa_storage INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include/)
@@ -97,7 +105,7 @@ endif()
 ##############################################################################
 
 if(${STORAGE_ENABLE_BENCHMARK})
-  file(GLOB_RECURSE bench_files "benchmarks/**.cpp")
+  file(GLOB_RECURSE bench_files "bench/**.cpp")
   foreach(bench_file ${bench_files})
     get_filename_component(bench_target ${bench_file} NAME_WE)
     add_executable(${bench_target} ${bench_file})
