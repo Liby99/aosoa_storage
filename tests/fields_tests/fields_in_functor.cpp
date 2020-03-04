@@ -1,3 +1,4 @@
+#include <memory>
 #include "math/prelude.hpp"
 #include "storage/prelude.hpp"
 
@@ -6,7 +7,7 @@ using namespace storage;
 using namespace math;
 
 template <typename... Types>
-using BaseStorage = Storage<Kokkos::Serial, Kokkos::HostSpace, 4, Types...>;
+using BaseStorage = Storage<Kokkos::OpenMP, Kokkos::HostSpace, 4, Types...>;
 
 template <typename T, int dim>
 using MyStorage = BaseStorage<T, Vector<T, dim>, Vector<T, dim>>;

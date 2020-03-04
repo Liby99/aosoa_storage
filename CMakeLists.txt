@@ -8,11 +8,27 @@ cmake_minimum_required(VERSION 3.10)
 project(aosoa_storage CXX)
 
 # CXX setup
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 # CMake Modules
 include(cmake/download_project.cmake)
+
+##############################################################################
+# Options                                                                    #
+##############################################################################
+
+option(STORAGE_ENABLE_BENCHMARK "Enable benchmark" On)
+
+option(STORAGE_ENABLE_TEST "Enable Testing" On)
+
+option(STORAGE_ENABLE_OPENMP "Enable OpenMP" On)
+
+option(STORAGE_ENABLE_CUDA "Enable Cuda" Off)
+
+if(${STORAGE_ENABLE_CUDA})
+  set(CMAKE_CXX_COMPILER ${CUDA_COMPILER})
+endif()
 
 ##############################################################################
 # External Libraries                                                         #
@@ -25,12 +41,23 @@ download_project(
   GIT_TAG 3.0.00
   UPDATE_DISCONNECTED 1
 )
+
+# Enable Kokkos devices
 set(Kokkos_ENABLE_SERIAL On)
+if(${STORAGE_ENABLE_CUDA})
+  set(Kokkos_ENABLE_CUDA On)
+elseif(${STORAGE_ENABLE_OPENMP})
+  set(Kokkos_ENABLE_OPENMP On)
+endif()
+
 add_subdirectory(${Kokkos_SOURCE_DIR} ${Kokkos_BINARY_DIR})
-set(Kokkos_DEVICES
-  SERIAL
-  # OPENMP
-)
+
+set(Kokkos_DEVICES SERIAL)
+if(${STORAGE_ENABLE_CUDA})
+  set(Kokkos_DEVICES CUDA ${Kokkos_DEVICES})
+elseif(${STORAGE_ENABLE_OPENMP})
+  set(Kokkos_DEVICES OPENMP ${Kokkos_DEVICES})
+endif()
 
 # Cabana
 download_project(

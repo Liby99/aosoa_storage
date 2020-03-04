@@ -39,11 +39,11 @@ namespace storage {
     template <std::size_t Index>
     using OptionalRefAt = std::optional<std::reference_wrapper<TypeAt<Index>>>;
 
-    using RefTupleExtractor = RefTupleExtractor<0, Types...>;
+    using SelfRefTupleExtractor = RefTupleExtractor<0, Types...>;
 
-    using RefTupleUpdator = RefTupleUpdator<0, Types...>;
+    using SelfRefTupleUpdator = RefTupleUpdator<0, Types...>;
 
-    using DataUpdator = DataUpdator<0, Types...>;
+    using SelfDataUpdator = DataUpdator<0, Types...>;
 
     static constexpr std::size_t N = sizeof...(Types);
 
@@ -57,7 +57,7 @@ namespace storage {
       if (i < data_indices.size()) {
         std::optional<std::size_t> data_index = data_indices[i];
         if (data_index.has_value()) {
-          return RefTupleExtractor::get(data, data_index.value());
+          return SelfRefTupleExtractor::get(data, data_index.value());
         }
       }
       return {};
@@ -65,12 +65,12 @@ namespace storage {
 
     RefTuple get_unchecked(std::size_t i) {
       std::optional<std::size_t> data_index = data_indices[i];
-      return RefTupleExtractor::get(data, data_index.value());
+      return SelfRefTupleExtractor::get(data, data_index.value());
     }
 
     ConstRefTuple get_unchecked_const(std::size_t i) const {
       std::optional<std::size_t> data_index = data_indices[i];
-      return RefTupleExtractor::get(data, data_index.value());
+      return SelfRefTupleExtractor::get(data, data_index.value());
     }
 
     template <std::size_t Index>
@@ -111,7 +111,7 @@ namespace storage {
       if (i < data_indices.size()) {
         auto data_index = data_indices[i];
         if (data_index.has_value()) {
-          DataUpdator::set(data, data_index.value(), components...);
+          SelfDataUpdator::set(data, data_index.value(), components...);
           return;
         }
       } else {
@@ -130,7 +130,7 @@ namespace storage {
       if (data_index >= data.capacity()) {
         data.resize(data_index + CAPACITY_INCREMENT);
       }
-      DataUpdator::set(data, data_index, components...);
+      SelfDataUpdator::set(data, data_index, components...);
     }
 
     std::size_t append(Types... components) {
@@ -145,14 +145,14 @@ namespace storage {
     }
 
     void fill(Types... components) {
-      par_each(KOKKOS_LAMBDA(int, auto data) { RefTupleUpdator::set(data, components...); });
+      par_each(KOKKOS_LAMBDA(int, auto data) { SelfRefTupleUpdator::set(data, components...); });
     }
 
     bool update(std::size_t i, Types... components) {
       if (i < data_indices.size()) {
         auto data_index = data_indices[i];
         if (data_index.has_value()) {
-          DataUpdator::set(data, data_index.value(), components...);
+          SelfDataUpdator::set(data, data_index.value(), components...);
           return true;
         }
       }
@@ -201,7 +201,7 @@ namespace storage {
     void each(std::function<void(int, RefTuple)> f) {
       for (int i = 0; i < size; i++) {
         auto global_index = global_indices[i];
-        auto element = RefTupleExtractor::get(data, i);
+        auto element = SelfRefTupleExtractor::get(data, i);
         f(global_index, element);
       }
     }
@@ -209,7 +209,7 @@ namespace storage {
     void par_each(std::function<void(int, RefTuple)> f) {
       auto kernel = KOKKOS_LAMBDA(const int i) {
         auto global_index = global_indices[i];
-        auto element = RefTupleExtractor::get(data, i);
+        auto element = SelfRefTupleExtractor::get(data, i);
         f(global_index, element);
       };
       Kokkos::RangePolicy<ExSpace> linear_policy(0, size);
