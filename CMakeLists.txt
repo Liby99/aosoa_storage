@@ -1,18 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
-##############################################################################
-# Settings                                                                   #
-##############################################################################
-
 # Basic project setup
 project(aosoa_storage CXX)
-
-# CXX setup
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-
-# CMake Modules
-include(cmake/download_project.cmake)
 
 ##############################################################################
 # Options                                                                    #
@@ -26,9 +15,19 @@ option(STORAGE_ENABLE_OPENMP "Enable OpenMP" On)
 
 option(STORAGE_ENABLE_CUDA "Enable Cuda" Off)
 
+##############################################################################
+# Settings                                                                   #
+##############################################################################
+
 if(${STORAGE_ENABLE_CUDA})
-  set(CMAKE_CXX_COMPILER ${CUDA_COMPILER})
+  # set(CMAKE_CXX_COMPILER ${CUDA_COMPILER})
+else()
+  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
+
+# CMake Modules
+include(cmake/download_project.cmake)
 
 ##############################################################################
 # External Libraries                                                         #
@@ -43,11 +42,11 @@ download_project(
 )
 
 # Enable Kokkos devices
-set(Kokkos_ENABLE_SERIAL On)
+set(Kokkos_ENABLE_SERIAL On CACHE INTERNAL "")
 if(${STORAGE_ENABLE_CUDA})
-  set(Kokkos_ENABLE_CUDA On)
+  set(Kokkos_ENABLE_CUDA On CACHE INTERNAL "")
 elseif(${STORAGE_ENABLE_OPENMP})
-  set(Kokkos_ENABLE_OPENMP On)
+  set(Kokkos_ENABLE_OPENMP On CACHE INTERNAL "")
 endif()
 
 add_subdirectory(${Kokkos_SOURCE_DIR} ${Kokkos_BINARY_DIR})
@@ -80,25 +79,30 @@ target_link_libraries(aosoa_storage INTERFACE Kokkos::kokkos cabanacore)
 # Tests                                                                      #
 ##############################################################################
 
-# Testing setup
-enable_testing()
-file(GLOB_RECURSE test_files "tests/**.cpp")
-foreach(test_file ${test_files})
-  get_filename_component(test_target ${test_file} NAME_WE)
-  add_executable(${test_target} ${test_file})
-  target_include_directories(${test_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
-  target_link_libraries(${test_target} PUBLIC Kokkos::kokkos cabanacore)
-  add_test(${test_target} ${test_target})
-endforeach()
+if(${STORAGE_ENABLE_TEST})
+  # Testing setup
+  enable_testing()
+  file(GLOB_RECURSE test_files "tests/**.cpp")
+  foreach(test_file ${test_files})
+    get_filename_component(test_target ${test_file} NAME_WE)
+    add_executable(${test_target} ${test_file})
+    target_include_directories(${test_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+    target_link_libraries(${test_target} PUBLIC Kokkos::kokkos cabanacore)
+    add_test(${test_target} ${test_target})
+  endforeach()
+endif()
 
 ##############################################################################
 # Benchmarks                                                                 #
 ##############################################################################
 
-file(GLOB_RECURSE bench_files "benchmarks/**.cpp")
-foreach(bench_file ${bench_files})
-  get_filename_component(bench_target ${bench_file} NAME_WE)
-  add_executable(${bench_target} ${bench_file})
-  target_include_directories(${bench_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
-  target_link_libraries(${bench_target} PUBLIC Kokkos::kokkos cabanacore)
-endforeach()
+if(${STORAGE_ENABLE_BENCHMARK})
+  file(GLOB_RECURSE bench_files "benchmarks/**.cpp")
+  foreach(bench_file ${bench_files})
+    get_filename_component(bench_target ${bench_file} NAME_WE)
+    add_executable(${bench_target} ${bench_file})
+    target_include_directories(${bench_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+    target_link_libraries(${bench_target} PUBLIC Kokkos::kokkos cabanacore)
+    add_test(${bench_target} ${bench_target})
+  endforeach()
+endif()
