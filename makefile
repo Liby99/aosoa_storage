@@ -46,4 +46,4 @@ clean:
 	@ rm -rf $(BUILD_DIR)
 
 format:
-	@ clang-format -i include/**/*.hpp tests/**/*.cpp
+	@ find include tests bench -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' -exec clang-format -i {} \;
