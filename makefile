@@ -15,12 +15,12 @@ CUDA_COMPILER := $(shell which nvcc_wrapper)
 
 # CMake command
 ifeq ($(ENABLE_CUDA), On)
-# If cuda enabled, then add all cuda API
 CMAKE_CMD := cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) \
 									 -D CMAKE_CXX_COMPILER=$(CUDA_COMPILER) \
 									 -D STORAGE_ENABLE_CUDA=On \
 									 -D STORAGE_ENABLE_OPENMP=Off \
 									 -D Kokkos_ARCH_$(CUDA_ARCH)=On \
+									 -D Kokkos_ENABLE_CUDA_LAMBDA=On \
 									 $(CURR_DIR)
 else
 CMAKE_CMD := cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) \
@@ -30,14 +30,23 @@ endif
 
 entry: all
 
-cuda:
-	@ make ENABLE_CUDA=On BUILD_DIR=build/cuda
+serial:
+	@ make ENABLE_OPENMP=Off BUILD_DIR=build/serial
+
+configure-serial:
+	@ make configure ENABLE_OPENMP=Off BUILD_DIR=build/serial
 
 openmp:
 	@ make BUILD_DIR=build/openmp
 
-serial:
-	@ make ENABLE_OPENMP=Off BUILD_DIR=build/serial
+configure-openmp:
+	@ make configure BUILD_DIR=build/openmp
+
+cuda:
+	@ make ENABLE_CUDA=On BUILD_DIR=build/cuda
+
+configure-cuda:
+	@ make configure ENABLE_CUDA=On BUILD_DIR=build/cuda
 
 all: $(BUILD_DIR)/Makefile
 	@ cd $(BUILD_DIR); make
