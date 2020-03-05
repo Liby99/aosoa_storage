@@ -21,6 +21,7 @@ option(STORAGE_ENABLE_CUDA "Enable Cuda" Off)
 
 if(${STORAGE_ENABLE_CUDA})
   # set(CMAKE_CXX_COMPILER ${CUDA_COMPILER})
+  set(KOKKOS_CUDA_OPTIONS enable_lambda CACHE INTERNAL "")
 else()
   set(CMAKE_CXX_STANDARD 14)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
