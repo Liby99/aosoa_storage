@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Cabana_Core.hpp>
 
 // Execution space

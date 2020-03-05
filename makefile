@@ -23,10 +23,21 @@ CMAKE_CMD := cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) \
 									 -D Kokkos_ARCH_$(CUDA_ARCH)=On \
 									 $(CURR_DIR)
 else
-CMAKE_CMD := cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CURR_DIR)
+CMAKE_CMD := cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) \
+									 -D STORAGE_ENABLE_OPENMP=$(ENABLE_OPENMP) \
+									 $(CURR_DIR)
 endif
 
 entry: all
+
+cuda:
+	@ make ENABLE_CUDA=On BUILD_DIR=build/cuda
+
+openmp:
+	@ make BUILD_DIR=build/openmp
+
+serial:
+	@ make ENABLE_OPENMP=Off BUILD_DIR=build/serial
 
 all: $(BUILD_DIR)/Makefile
 	@ cd $(BUILD_DIR); make
