@@ -1,6 +1,6 @@
 #pragma once
 
-#include <../config.hpp>
+#include "../config.hpp"
 
 // Position, Velocity, Gradient Velocity, Affine Matrix (C), Mass
 template <class T, int D>

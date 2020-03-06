@@ -1,7 +1,7 @@
 #include <random>
 
-#include <./grid.hpp>
-#include <./storages.hpp>
+#include "./grid.hpp"
+#include "./storages.hpp"
 
 template <class T>
 T random() {
@@ -74,7 +74,7 @@ template <class T, int D>
 void p2g(Particles<T, D> &particles,
          Stresses<T, D> &stresses,
          Grid<T, D> &grid,
-         T[D] gravity,
+         T gravity[D],
          T dx,
          T dt,
          int start,

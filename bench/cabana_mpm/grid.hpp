@@ -1,4 +1,6 @@
-#include <../config.hpp>
+#include <Kokkos_UnorderedMap.hpp>
+
+#include "../config.hpp"
 
 template <class T, int D>
 struct Grid {
