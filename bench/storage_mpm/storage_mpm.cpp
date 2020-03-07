@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "./storage.hpp"
+#include "./storage/storage.hpp"
 #include "./math/vector.hpp"
 #include "./utils/grid_iterator.hpp"
 
