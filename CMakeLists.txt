@@ -11,7 +11,7 @@ option(STORAGE_ENABLE_TEST "Compile Tests" On)
 
 option(STORAGE_ENABLE_BENCHMARK "Compile Benchmarks" On)
 
-option(STORAGE_ENABLE_OPENMP "Enable OpenMP" On)
+option(STORAGE_ENABLE_OPENMP "Enable OpenMP" Off)
 
 option(STORAGE_ENABLE_CUDA "Enable Cuda" Off)
 
@@ -20,7 +20,6 @@ option(STORAGE_ENABLE_CUDA "Enable Cuda" Off)
 ##############################################################################
 
 if(${STORAGE_ENABLE_CUDA})
-  # set(CMAKE_CXX_COMPILER ${CUDA_COMPILER})
   set(KOKKOS_CUDA_OPTIONS enable_lambda CACHE INTERNAL "")
 else()
   set(CMAKE_CXX_STANDARD 14)
