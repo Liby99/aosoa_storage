@@ -22,8 +22,8 @@ struct GridIterator<2> {
     return make_range(GridIterator<2>(size.x, size.y), GridIterator<2>(size.x, size.y, true));
   }
 
-  std::tuple<int, int> operator*() {
-    return std::make_tuple(i, j);
+  Vector<int, 2> operator*() {
+    return Vector<int, 2>(i, j);
   }
 
   void operator++() {
@@ -57,8 +57,8 @@ struct GridIterator<3> {
                       GridIterator<3>(size.x, size.y, size.z, true));
   }
 
-  std::tuple<int, int, int> operator*() {
-    return std::make_tuple(i, j, k);
+  Vector<int, 3> operator*() {
+    return Vector<int, 3>(i, j, k);
   }
 
   void operator++() {

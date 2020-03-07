@@ -34,6 +34,11 @@ struct Vector<T, 2> {
   Vector<T, 2> operator*(T other) const {
     return Vector<T, 2>(x * other, y * other);
   }
+
+  template <typename U>
+  Vector<U, 2> cast() const {
+    return Vector<U, 2>((U)x, (U)y);
+  }
 };
 
 template <class T>

@@ -17,7 +17,7 @@ void run() {
   XVM xvm(particle_amount);
 
   xvm.insert_iter(GridIterator<D>::range(size), [](auto node, auto &handle) {
-    handle.template store<0>(Vector<T, D>(std::get<0>(node), std::get<1>(node)));
+    handle.template store<0>(node.template cast<T>());
     handle.template store<1>(Vector<T, D>(0, 0));
     handle.template store<2>(0.01);
   });
