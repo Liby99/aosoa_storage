@@ -4,6 +4,8 @@ BUILD_DIR := build
 
 BUILD_TYPE := Debug
 
+LOWER_BUILD_TYPE = `echo $(BUILD_TYPE) | tr A-Z a-z`
+
 ENABLE_OPENMP := Off
 
 ENABLE_CUDA := Off
@@ -28,25 +30,27 @@ CMAKE_CMD := cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) \
 									 $(CURR_DIR)
 endif
 
+export BUILD_TYPE
+
 entry: all
 
 serial:
-	@ make BUILD_DIR=build/serial
+	@ make BUILD_DIR=build/$(LOWER_BUILD_TYPE)/serial
 
 configure-serial:
-	@ make configure BUILD_DIR=build/serial
+	@ make configure BUILD_DIR=build/$(LOWER_BUILD_TYPE)/serial
 
 openmp:
-	@ make ENABLE_OPENMP=On BUILD_DIR=build/openmp
+	@ make ENABLE_OPENMP=On BUILD_DIR=build/$(LOWER_BUILD_TYPE)/openmp
 
 configure-openmp:
-	@ make configure ENABLE_OPENMP=On BUILD_DIR=build/openmp
+	@ make configure ENABLE_OPENMP=On BUILD_DIR=build/$(LOWER_BUILD_TYPE)/openmp
 
 cuda:
-	@ make ENABLE_CUDA=On BUILD_DIR=build/cuda
+	@ make ENABLE_CUDA=On BUILD_DIR=build/$(LOWER_BUILD_TYPE)/cuda
 
 configure-cuda:
-	@ make configure ENABLE_CUDA=On BUILD_DIR=build/cuda
+	@ make configure ENABLE_CUDA=On BUILD_DIR=build/$(LOWER_BUILD_TYPE)/cuda
 
 all: $(BUILD_DIR)/Makefile
 	@ cd $(BUILD_DIR); make
