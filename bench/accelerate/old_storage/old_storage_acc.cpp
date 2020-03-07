@@ -46,7 +46,6 @@ struct Initializer<T, 3> {
 
 template <class T, int D>
 void run() {
-  std::cout << "Running dimension " << D << std::endl;
   Timer timer;
 
   int side = 100;
@@ -69,12 +68,18 @@ void run() {
     });
   }
 
-  std::cout << "\nFinished in " << timer.elapsed<Timer::Seconds>() << " seconds" << std::endl;
+  std::cout << "\nFinished in " << timer.elapsed<Timer::Milliseconds>() << " ms" << std::endl;
 }
 
 int main() {
   Kokkos::initialize();
+  std::cout << "float, 2" << std::endl;
   run<float, 2>();
+  std::cout << "double, 2" << std::endl;
+  run<double, 2>();
+  std::cout << "float, 3" << std::endl;
   run<float, 3>();
+  std::cout << "double, 3" << std::endl;
+  run<double, 3>();
   Kokkos::finalize();
 }

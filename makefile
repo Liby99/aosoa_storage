@@ -31,16 +31,16 @@ endif
 entry: all
 
 serial:
-	@ make ENABLE_OPENMP=Off BUILD_DIR=build/serial
+	@ make BUILD_DIR=build/serial
 
 configure-serial:
-	@ make configure ENABLE_OPENMP=Off BUILD_DIR=build/serial
+	@ make configure BUILD_DIR=build/serial
 
 openmp:
-	@ make BUILD_DIR=build/openmp
+	@ make ENABLE_OPENMP=On BUILD_DIR=build/openmp
 
 configure-openmp:
-	@ make configure BUILD_DIR=build/openmp
+	@ make configure ENABLE_OPENMP=On BUILD_DIR=build/openmp
 
 cuda:
 	@ make ENABLE_CUDA=On BUILD_DIR=build/cuda

@@ -5,6 +5,10 @@
 struct Timer {
   using Seconds = std::chrono::seconds;
 
+  using Milliseconds = std::chrono::milliseconds;
+
+  using Microseconds = std::chrono::microseconds;
+
   decltype(std::chrono::high_resolution_clock::now()) start;
 
   Timer() : start(std::chrono::high_resolution_clock::now()) {}

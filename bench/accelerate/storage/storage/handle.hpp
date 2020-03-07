@@ -42,13 +42,13 @@ struct ElementHandle {
 
   template <int Index>
   inline TypeAt<Index> fetch() const {
-    auto slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
+    const auto &slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
     return TypeTransform<TypeAt<Index>>::fetch(slice, i);
   }
 
   template <int Index>
   inline void store(const TypeAt<Index> &comp) {
-    auto slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
+    const auto &slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
     TypeTransform<TypeAt<Index>>::store(slice, i, comp);
   }
 };
@@ -71,13 +71,13 @@ struct SimdElementHandle {
 
   template <int Index>
   inline TypeAt<Index> fetch() const {
-    auto slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
+    const auto &slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
     return TypeTransform<TypeAt<Index>>::fetch(slice, s, a);
   }
 
   template <int Index>
   inline void store(const TypeAt<Index> &comp) {
-    auto slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
+    const auto &slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
     TypeTransform<TypeAt<Index>>::store(slice, s, a, comp);
   }
 };

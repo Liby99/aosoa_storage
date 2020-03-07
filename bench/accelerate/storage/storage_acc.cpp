@@ -7,7 +7,6 @@
 
 template <class T, int D>
 void run() {
-  std::cout << "Running dimension " << D << std::endl;
   Timer timer;
 
   int side = 100;
@@ -32,19 +31,25 @@ void run() {
     xvm.simd_par_each(KOKKOS_LAMBDA(auto &handle) {
       Vector<T, D> x = handle.template fetch<0>();
       Vector<T, D> v = handle.template fetch<1>();
-      v -= gravity * dt;
+      v += gravity * dt;
       x += v * dt;
       handle.template store<0>(x);
       handle.template store<1>(v);
     });
   }
 
-  std::cout << "\nFinished in " << timer.elapsed<Timer::Seconds>() << " seconds" << std::endl;
+  std::cout << "\nFinished in " << timer.elapsed<Timer::Milliseconds>() << " ms" << std::endl;
 }
 
 int main() {
   Kokkos::initialize();
+  std::cout << "float, 2" << std::endl;
   run<float, 2>();
+  std::cout << "double, 2" << std::endl;
+  run<double, 2>();
+  std::cout << "float, 3" << std::endl;
   run<float, 3>();
+  std::cout << "double, 3" << std::endl;
+  run<double, 3>();
   Kokkos::finalize();
 }
