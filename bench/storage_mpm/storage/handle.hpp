@@ -3,6 +3,7 @@
 #include "../../config.hpp"
 
 #include "./utils.hpp"
+#include "./type_transform.hpp"
 
 template <int Index, typename AoSoA>
 struct SliceHolderBase {
@@ -24,12 +25,7 @@ struct SliceHolder<Index, AoSoA, T, Types...> : public SliceHolderBase<Index, Ao
 };
 
 template <typename... Types>
-struct ElementHandle
-    : public SliceHolder<0,
-                         Cabana::AoSoA<Cabana::MemberTypes<typename TypeTransform<Types>::To...>,
-                                       KokkosDevice,
-                                       BIN_SIZE>,
-                         Types...> {
+struct ElementHandle {
   using MemberTypes = Cabana::MemberTypes<typename TypeTransform<Types>::To...>;
 
   using CabanaAoSoA = Cabana::AoSoA<MemberTypes, KokkosDevice, BIN_SIZE>;
@@ -37,29 +33,28 @@ struct ElementHandle
   template <int Index>
   using TypeAt = typename ExtractTypeAt<Index, Types...>::Type;
 
-  int index;
+  const SliceHolder<0, CabanaAoSoA, Types...> &slice_holder;
 
-  ElementHandle(CabanaAoSoA &data, int index)
-      : SliceHolder<0, CabanaAoSoA, Types...>(data), index(index) {}
+  int i;
+
+  ElementHandle(const SliceHolder<0, CabanaAoSoA, Types...> &slice_holder, int i)
+      : slice_holder(slice_holder), i(i) {}
 
   template <int Index>
   TypeAt<Index> fetch() const {
-    return TypeTransform<TypeAt<Index>>::fetch(SliceHolderBase<Index, CabanaAoSoA>::slice, index);
+    auto slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
+    return TypeTransform<TypeAt<Index>>::fetch(slice, i);
   }
 
   template <int Index>
   void store(const TypeAt<Index> &comp) {
-    TypeTransform<TypeAt<Index>>::store(SliceHolderBase<Index, CabanaAoSoA>::slice, index, comp);
+    auto slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
+    TypeTransform<TypeAt<Index>>::store(slice, i, comp);
   }
 };
 
 template <typename... Types>
-struct SimdElementHandle
-    : public SliceHolder<0,
-                         Cabana::AoSoA<Cabana::MemberTypes<typename TypeTransform<Types>::To...>,
-                                       KokkosDevice,
-                                       BIN_SIZE>,
-                         Types...> {
+struct SimdElementHandle {
   using MemberTypes = Cabana::MemberTypes<typename TypeTransform<Types>::To...>;
 
   using CabanaAoSoA = Cabana::AoSoA<MemberTypes, KokkosDevice, BIN_SIZE>;
@@ -67,18 +62,22 @@ struct SimdElementHandle
   template <int Index>
   using TypeAt = typename ExtractTypeAt<Index, Types...>::Type;
 
+  const SliceHolder<0, CabanaAoSoA, Types...> &slice_holder;
+
   int s, a;
 
-  SimdElementHandle(CabanaAoSoA &data, int s, int a)
-      : SliceHolder<0, CabanaAoSoA, Types...>(data), s(s), a(a) {}
+  SimdElementHandle(const SliceHolder<0, CabanaAoSoA, Types...> &slice_holder, int s, int a)
+      : slice_holder(slice_holder), s(s), a(a) {}
 
   template <int Index>
   TypeAt<Index> fetch() const {
-    return TypeTransform<TypeAt<Index>>::fetch(SliceHolderBase<Index, CabanaAoSoA>::slice, s, a);
+    auto slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
+    return TypeTransform<TypeAt<Index>>::fetch(slice, s, a);
   }
 
   template <int Index>
   void store(const TypeAt<Index> &comp) {
-    TypeTransform<TypeAt<Index>>::store(SliceHolderBase<Index, CabanaAoSoA>::slice, s, a, comp);
+    auto slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
+    TypeTransform<TypeAt<Index>>::store(slice, s, a, comp);
   }
 };

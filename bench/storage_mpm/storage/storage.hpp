@@ -23,10 +23,10 @@ struct Storage {
 
   template <typename Iter, typename F>
   Range insert_iter(Iter iter, F callback) {
-    ElementHandle<Types...> handle(data, size);
+    SliceHolder<0, CabanaAoSoA, Types...> slice_holder(data);
     int start = size;
     for (auto data : iter) {
-      handle.index = size++;
+      ElementHandle<Types...> handle(slice_holder, size++);
       callback(data, handle);
     }
     int length = size - start;
@@ -35,17 +35,18 @@ struct Storage {
 
   template <typename F>
   void each(F callback) {
-    ElementHandle<Types...> handle(data, 0);
+    SliceHolder<0, CabanaAoSoA, Types...> slice_holder(data);
     for (int i = 0; i < size; i++) {
-      handle.index = i;
+      ElementHandle<Types...> handle(slice_holder, i);
       callback(handle);
     }
   }
 
   template <typename F>
   void par_each(F callback) {
+    SliceHolder<0, CabanaAoSoA, Types...> slice_holder(data);
     auto kernel = KOKKOS_LAMBDA(const int i) {
-      ElementHandle<Types...> handle(data, i);
+      ElementHandle<Types...> handle(slice_holder, i);
       callback(handle);
     };
     Kokkos::RangePolicy<ExecutionSpace> linear_policy(0, size);
@@ -54,8 +55,9 @@ struct Storage {
 
   template <typename F>
   void simd_par_each(F callback) {
+    SliceHolder<0, CabanaAoSoA, Types...> slice_holder(data);
     auto kernel = KOKKOS_LAMBDA(const int s, const int a) {
-      SimdElementHandle<Types...> handle(data, s, a);
+      SimdElementHandle<Types...> handle(slice_holder, s, a);
       callback(handle);
     };
     Cabana::SimdPolicy<BIN_SIZE, ExecutionSpace> simd_policy(0, size);

@@ -30,6 +30,15 @@ void run() {
     handle.template store<0>(x);
     handle.template store<1>(v);
   });
+
+  xvm.par_each(KOKKOS_LAMBDA(auto &handle) {
+    auto x = handle.template fetch<0>();
+    auto v = handle.template fetch<1>();
+    v -= gravity * dt;
+    x += v * dt;
+    handle.template store<0>(x);
+    handle.template store<1>(v);
+  });
 }
 
 int main() {
