@@ -18,7 +18,7 @@ void run() {
 
   xvm.insert_iter(GridIterator<D>::range(size), [](auto node, auto &handle) {
     handle.template store<0>(node.template cast<T>());
-    handle.template store<1>(Vector<T, D>(0, 0));
+    handle.template store<1>(Vector<T, D>(0));
     handle.template store<2>(0.01);
   });
 
@@ -44,5 +44,6 @@ void run() {
 int main() {
   Kokkos::initialize();
   run<float, 2>();
+  run<float, 3>();
   Kokkos::finalize();
 }
