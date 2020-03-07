@@ -20,6 +20,7 @@ struct Grid {
   //   uint64_t xmask = 0x9249249249249249UL;
   //   uint64_t ymask = 0x2492492492492492UL;
   //   uint64_t zmask = 0x4924924924924924UL;
-  //   return _pdep_u64((uint64_t)x, xmask) | _pdep_u64((uint64_t)y, ymask) | _pdep_u64((uint64_t)z, zmask);
+  //   return _pdep_u64((uint64_t)x, xmask) | _pdep_u64((uint64_t)y, ymask) | _pdep_u64((uint64_t)z,
+  //   zmask);
   // }
 };

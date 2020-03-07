@@ -17,29 +17,20 @@ struct SliceHolder {
 };
 
 template <int Index, typename AoSoA, typename T, typename... Types>
-struct SliceHolder<Index, AoSoA, T, Types...> :
-  public SliceHolderBase<Index, AoSoA>,
-  public SliceHolder<Index + 1, AoSoA, Types...> {
+struct SliceHolder<Index, AoSoA, T, Types...> : public SliceHolderBase<Index, AoSoA>,
+                                                public SliceHolder<Index + 1, AoSoA, Types...> {
   SliceHolder(AoSoA &aosoa)
-    : SliceHolderBase<Index, AoSoA>(aosoa),
-      SliceHolder<Index + 1, AoSoA, Types...>(aosoa) {}
+      : SliceHolderBase<Index, AoSoA>(aosoa), SliceHolder<Index + 1, AoSoA, Types...>(aosoa) {}
 };
 
 template <typename... Types>
-struct ElementHandle :
-  public SliceHolder<
-    0,
-    Cabana::AoSoA<
-      Cabana::MemberTypes<
-        typename TypeTransform<Types>::To ...
-      >,
-      KokkosDevice,
-      BIN_SIZE
-    >,
-    Types...
-  >
-{
-  using MemberTypes = Cabana::MemberTypes<typename TypeTransform<Types>::To ...>;
+struct ElementHandle
+    : public SliceHolder<0,
+                         Cabana::AoSoA<Cabana::MemberTypes<typename TypeTransform<Types>::To...>,
+                                       KokkosDevice,
+                                       BIN_SIZE>,
+                         Types...> {
+  using MemberTypes = Cabana::MemberTypes<typename TypeTransform<Types>::To...>;
 
   using CabanaAoSoA = Cabana::AoSoA<MemberTypes, KokkosDevice, BIN_SIZE>;
 
@@ -48,7 +39,8 @@ struct ElementHandle :
 
   int index;
 
-  ElementHandle(CabanaAoSoA &data, int index) : SliceHolder<0, CabanaAoSoA, Types...>(data), index(index) {}
+  ElementHandle(CabanaAoSoA &data, int index)
+      : SliceHolder<0, CabanaAoSoA, Types...>(data), index(index) {}
 
   template <int Index>
   TypeAt<Index> fetch() const {
@@ -62,18 +54,13 @@ struct ElementHandle :
 };
 
 template <typename... Types>
-struct SimdElementHandle : public SliceHolder<
-    0,
-    Cabana::AoSoA<
-      Cabana::MemberTypes<
-        typename TypeTransform<Types>::To ...
-      >,
-      KokkosDevice,
-      BIN_SIZE
-    >,
-    Types...
-  > {
-  using MemberTypes = Cabana::MemberTypes<typename TypeTransform<Types>::To ...>;
+struct SimdElementHandle
+    : public SliceHolder<0,
+                         Cabana::AoSoA<Cabana::MemberTypes<typename TypeTransform<Types>::To...>,
+                                       KokkosDevice,
+                                       BIN_SIZE>,
+                         Types...> {
+  using MemberTypes = Cabana::MemberTypes<typename TypeTransform<Types>::To...>;
 
   using CabanaAoSoA = Cabana::AoSoA<MemberTypes, KokkosDevice, BIN_SIZE>;
 
@@ -82,7 +69,8 @@ struct SimdElementHandle : public SliceHolder<
 
   int s, a;
 
-  SimdElementHandle(CabanaAoSoA &data, int s, int a) : SliceHolder<0, CabanaAoSoA, Types...>(data), s(s), a(a) {}
+  SimdElementHandle(CabanaAoSoA &data, int s, int a)
+      : SliceHolder<0, CabanaAoSoA, Types...>(data), s(s), a(a) {}
 
   template <int Index>
   TypeAt<Index> fetch() const {

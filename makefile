@@ -78,5 +78,5 @@ clean:
 # `make format`
 # Format all the files
 format:
-	@ find include tests bench -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' -exec clang-format -i {} \;
+	@ find include tests bench -iname "*.*pp" -exec clang-format -i {} \;
 .PHONY: format

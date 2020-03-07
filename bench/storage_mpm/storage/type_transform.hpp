@@ -102,7 +102,8 @@ struct TypeTransform<Vector<T, 4>> {
 
   template <typename Slice>
   static From fetch(const Slice &slice, int s, int a) {
-    return From(slice.access(s, a, 0), slice.access(s, a, 1), slice.access(s, a, 2), slice.access(s, a, 3));
+    return From(slice.access(s, a, 0), slice.access(s, a, 1), slice.access(s, a, 2),
+                slice.access(s, a, 3));
   }
 
   template <typename Slice>

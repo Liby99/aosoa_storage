@@ -2,16 +2,16 @@
 
 #include "../../config.hpp"
 
-#include "../utils/range.hpp"
 #include "../math/vector.hpp"
+#include "../utils/range.hpp"
 
-#include "./type_transform.hpp"
 #include "./handle.hpp"
+#include "./type_transform.hpp"
 #include "./utils.hpp"
 
 template <typename... Types>
 struct Storage {
-  using MemberTypes = Cabana::MemberTypes<typename TypeTransform<Types>::To ...>;
+  using MemberTypes = Cabana::MemberTypes<typename TypeTransform<Types>::To...>;
 
   using CabanaAoSoA = Cabana::AoSoA<MemberTypes, KokkosDevice, BIN_SIZE>;
 
@@ -30,7 +30,7 @@ struct Storage {
       callback(data, handle);
     }
     int length = size - start;
-    return Range { start, length };
+    return Range{start, length};
   }
 
   template <typename F>

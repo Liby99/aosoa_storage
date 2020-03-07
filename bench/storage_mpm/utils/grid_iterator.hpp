@@ -53,7 +53,8 @@ struct GridIterator<3> {
   }
 
   static IteratorRange<GridIterator<3>> range(Vector<int, 3> size) {
-    return make_range(GridIterator<3>(size.x, size.y, size.z), GridIterator<3>(size.x, size.y, size.z, true));
+    return make_range(GridIterator<3>(size.x, size.y, size.z),
+                      GridIterator<3>(size.x, size.y, size.z, true));
   }
 
   std::tuple<int, int, int> operator*() {

@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "./storage/storage.hpp"
 #include "./math/vector.hpp"
+#include "./storage/storage.hpp"
 #include "./utils/grid_iterator.hpp"
 
 template <class T, int D>
