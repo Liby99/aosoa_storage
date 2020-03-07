@@ -76,21 +76,30 @@ void p2g(Particles<T, D> &particles,
          Grid<T, D> &grid,
          T gravity[D],
          T dx,
-         T dt,
-         int start,
-         int amount) {}
+         T dt) {}
 
 template <class T, int D>
 void run() {
   const int particle_count = 100000000;
 
+  T gravity[D];
+  gravity[1] = -9.8;
+  T dx = 0.02;
+  T dt = 0.01;
+
   // Initialize storages
   Particles<T, D> particles("particles", particle_count);
   Stresses<T, D> stresses("stresses", particle_count);
+  Grid<T, D> grid;
 
   // Initialize particles
   initialize_particles<T, D>(particles, 0, particle_count);
   initialize_stresses<T, D>(stresses, 0, particle_count);
+
+  // Simulation main loop
+  for (int i = 0; i < 1000; i++) {
+    p2g(particles, stresses, grid, gravity, dx, dt);
+  }
 }
 
 int main() {
