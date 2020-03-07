@@ -6,63 +6,8 @@
 #include "../math/vector.hpp"
 
 #include "./type_transform.hpp"
+#include "./handle.hpp"
 #include "./utils.hpp"
-
-template <typename... Types>
-struct ElementHandle {
-  using MemberTypes = Cabana::MemberTypes<typename TypeTransform<Types>::To ...>;
-
-  using CabanaAoSoA = Cabana::AoSoA<MemberTypes, KokkosDevice, BIN_SIZE>;
-
-  template <int Index>
-  using TypeAt = typename ExtractTypeAt<Index, Types...>::Type;
-
-  CabanaAoSoA &data;
-
-  int index;
-
-  ElementHandle(CabanaAoSoA &data, int index) : data(data), index(index) {}
-
-  template <int Index>
-  TypeAt<Index> fetch() const {
-    auto slice = Cabana::slice<Index>(data);
-    return TypeTransform<TypeAt<Index>>::fetch(slice, index);
-  }
-
-  template <int Index>
-  void store(const TypeAt<Index> &comp) {
-    auto slice = Cabana::slice<Index>(data);
-    TypeTransform<TypeAt<Index>>::store(slice, index, comp);
-  }
-};
-
-template <typename... Types>
-struct SimdElementHandle {
-  using MemberTypes = Cabana::MemberTypes<typename TypeTransform<Types>::To ...>;
-
-  using CabanaAoSoA = Cabana::AoSoA<MemberTypes, KokkosDevice, BIN_SIZE>;
-
-  template <int Index>
-  using TypeAt = typename ExtractTypeAt<Index, Types...>::Type;
-
-  CabanaAoSoA &data;
-
-  int s, a;
-
-  SimdElementHandle(CabanaAoSoA &data, int s, int a) : data(data), s(s), a(a) {}
-
-  template <int Index>
-  TypeAt<Index> fetch() const {
-    auto slice = Cabana::slice<Index>(data);
-    return TypeTransform<TypeAt<Index>>::fetch(slice, s, a);
-  }
-
-  template <int Index>
-  void store(const TypeAt<Index> &comp) {
-    auto slice = Cabana::slice<Index>(data);
-    TypeTransform<TypeAt<Index>>::store(slice, s, a, comp);
-  }
-};
 
 template <typename... Types>
 struct Storage {
