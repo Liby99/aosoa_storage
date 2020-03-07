@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../config.hpp"
+#include "../../../common/config.hpp"
 
 #include "./utils.hpp"
 #include "./type_transform.hpp"
@@ -41,13 +41,13 @@ struct ElementHandle {
       : slice_holder(slice_holder), i(i) {}
 
   template <int Index>
-  TypeAt<Index> fetch() const {
+  inline TypeAt<Index> fetch() const {
     auto slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
     return TypeTransform<TypeAt<Index>>::fetch(slice, i);
   }
 
   template <int Index>
-  void store(const TypeAt<Index> &comp) {
+  inline void store(const TypeAt<Index> &comp) {
     auto slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
     TypeTransform<TypeAt<Index>>::store(slice, i, comp);
   }
@@ -70,13 +70,13 @@ struct SimdElementHandle {
       : slice_holder(slice_holder), s(s), a(a) {}
 
   template <int Index>
-  TypeAt<Index> fetch() const {
+  inline TypeAt<Index> fetch() const {
     auto slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
     return TypeTransform<TypeAt<Index>>::fetch(slice, s, a);
   }
 
   template <int Index>
-  void store(const TypeAt<Index> &comp) {
+  inline void store(const TypeAt<Index> &comp) {
     auto slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
     TypeTransform<TypeAt<Index>>::store(slice, s, a, comp);
   }

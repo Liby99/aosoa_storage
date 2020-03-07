@@ -9,22 +9,22 @@ struct TypeTransform {
   using To = T;
 
   template <typename Slice>
-  static From fetch(const Slice &slice, int i) {
+  static inline From fetch(const Slice &slice, int i) {
     return slice(i);
   }
 
   template <typename Slice>
-  static From fetch(const Slice &slice, int s, int a) {
+  static inline From fetch(const Slice &slice, int s, int a) {
     return slice.access(s, a);
   }
 
   template <typename Slice>
-  static void store(const Slice &slice, int i, const From &data) {
+  static inline void store(const Slice &slice, int i, const From &data) {
     slice(i) = data;
   }
 
   template <typename Slice>
-  static void store(const Slice &slice, int s, int a, const From &data) {
+  static inline void store(const Slice &slice, int s, int a, const From &data) {
     slice.access(s, a) = data;
   }
 };
@@ -36,23 +36,23 @@ struct TypeTransform<Vector<T, 2>> {
   using To = T[2];
 
   template <typename Slice>
-  static From fetch(const Slice &slice, int i) {
+  static inline From fetch(const Slice &slice, int i) {
     return From(slice(i, 0), slice(i, 1));
   }
 
   template <typename Slice>
-  static From fetch(const Slice &slice, int s, int a) {
+  static inline From fetch(const Slice &slice, int s, int a) {
     return From(slice.access(s, a, 0), slice.access(s, a, 1));
   }
 
   template <typename Slice>
-  static void store(const Slice &slice, int i, const From &data) {
+  static inline void store(const Slice &slice, int i, const From &data) {
     slice(i, 0) = data.x;
     slice(i, 1) = data.y;
   }
 
   template <typename Slice>
-  static void store(const Slice &slice, int s, int a, const From &data) {
+  static inline void store(const Slice &slice, int s, int a, const From &data) {
     slice.access(s, a, 0) = data.x;
     slice.access(s, a, 1) = data.y;
   }
@@ -65,24 +65,24 @@ struct TypeTransform<Vector<T, 3>> {
   using To = T[3];
 
   template <typename Slice>
-  static From fetch(const Slice &slice, int i) {
+  static inline From fetch(const Slice &slice, int i) {
     return From(slice(i, 0), slice(i, 1), slice(i, 2));
   }
 
   template <typename Slice>
-  static From fetch(const Slice &slice, int s, int a) {
+  static inline From fetch(const Slice &slice, int s, int a) {
     return From(slice.access(s, a, 0), slice.access(s, a, 1), slice.access(s, a, 2));
   }
 
   template <typename Slice>
-  static void store(const Slice &slice, int i, const From &data) {
+  static inline void store(const Slice &slice, int i, const From &data) {
     slice(i, 0) = data.x;
     slice(i, 1) = data.y;
     slice(i, 2) = data.z;
   }
 
   template <typename Slice>
-  static void store(const Slice &slice, int s, int a, const From &data) {
+  static inline void store(const Slice &slice, int s, int a, const From &data) {
     slice.access(s, a, 0) = data.x;
     slice.access(s, a, 1) = data.y;
     slice.access(s, a, 2) = data.z;
@@ -96,18 +96,18 @@ struct TypeTransform<Vector<T, 4>> {
   using To = T[4];
 
   template <typename Slice>
-  static From fetch(const Slice &slice, int i) {
+  static inline From fetch(const Slice &slice, int i) {
     return From(slice(i, 0), slice(i, 1), slice(i, 2), slice(i, 3));
   }
 
   template <typename Slice>
-  static From fetch(const Slice &slice, int s, int a) {
+  static inline From fetch(const Slice &slice, int s, int a) {
     return From(slice.access(s, a, 0), slice.access(s, a, 1), slice.access(s, a, 2),
                 slice.access(s, a, 3));
   }
 
   template <typename Slice>
-  static void store(const Slice &slice, int i, const From &data) {
+  static inline void store(const Slice &slice, int i, const From &data) {
     slice(i, 0) = data.x;
     slice(i, 1) = data.y;
     slice(i, 2) = data.z;
@@ -115,7 +115,7 @@ struct TypeTransform<Vector<T, 4>> {
   }
 
   template <typename Slice>
-  static void store(const Slice &slice, int s, int a, const From &data) {
+  static inline void store(const Slice &slice, int s, int a, const From &data) {
     slice.access(s, a, 0) = data.x;
     slice.access(s, a, 1) = data.y;
     slice.access(s, a, 2) = data.z;

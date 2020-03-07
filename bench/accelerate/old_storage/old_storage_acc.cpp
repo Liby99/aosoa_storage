@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "../../common/timer.hpp"
 #include "./config.hpp"
 #include "./math/prelude.hpp"
 #include "./storage/prelude.hpp"
@@ -45,6 +46,9 @@ struct Initializer<T, 3> {
 
 template <class T, int D>
 void run() {
+  std::cout << "Running dimension " << D << std::endl;
+  Timer timer;
+
   int side = 100;
   int particle_amount = pow(side, D);
 
@@ -57,14 +61,15 @@ void run() {
   Initializer<T, D>::initialize(xvm, side);
 
   for (int frame = 0; frame < 100; frame++) {
-    printf("Frame %d\r", frame);
-    fflush(stdout);
+    std::cout << "Frame " << frame << "\r" << std::flush;
     xvm.par_each(KOKKOS_LAMBDA(int, auto data) {
       auto &[x, v, m] = data;
       v -= gravity * dt;
       x += v * dt;
     });
   }
+
+  std::cout << "\nFinished in " << timer.elapsed<Timer::Seconds>() << " seconds" << std::endl;
 }
 
 int main() {

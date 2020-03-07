@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../config.hpp"
+#include "../../../common/config.hpp"
 
 #include "../math/vector.hpp"
 #include "../utils/range.hpp"
