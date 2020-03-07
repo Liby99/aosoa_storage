@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../math/vector.hpp"
 #include "./iterator_range.hpp"
 
 template <int D>
@@ -15,6 +16,10 @@ struct GridIterator<2> {
 
   static IteratorRange<GridIterator<2>> range(int x, int y) {
     return make_range(GridIterator<2>(x, y), GridIterator<2>(x, y, true));
+  }
+
+  static IteratorRange<GridIterator<2>> range(Vector<int, 2> size) {
+    return make_range(GridIterator<2>(size.x, size.y), GridIterator<2>(size.x, size.y, true));
   }
 
   std::tuple<int, int> operator*() {
@@ -42,6 +47,14 @@ struct GridIterator<3> {
   GridIterator(int x, int y, int z) : x(x), y(y), z(z), i(0), j(0), k(0) {}
 
   GridIterator(int x, int y, int z, bool _) : x(x), y(y), z(z), i(0), j(0), k(z) {}
+
+  static IteratorRange<GridIterator<3>> range(int x, int y, int z) {
+    return make_range(GridIterator<3>(x, y, z), GridIterator<3>(x, y, z, true));
+  }
+
+  static IteratorRange<GridIterator<3>> range(Vector<int, 3> size) {
+    return make_range(GridIterator<3>(size.x, size.y, size.z), GridIterator<3>(size.x, size.y, size.z, true));
+  }
 
   std::tuple<int, int, int> operator*() {
     return std::make_tuple(i, j, k);

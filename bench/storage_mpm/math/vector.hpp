@@ -13,11 +13,11 @@ struct Vector<T, 2> {
 
   Vector(T x, T y) : x(x), y(y) {}
 
-  Vector<T, 2> operator+(Vector<T, 2> other) {
+  Vector<T, 2> operator+(Vector<T, 2> other) const {
     return Vector<T, 2>(x + other.x, y + other.y);
   }
 
-  Vector<T, 2> operator-(Vector<T, 2> other) {
+  Vector<T, 2> operator-(Vector<T, 2> other) const {
     return Vector<T, 2>(x - other.x, y - other.y);
   }
 
@@ -31,7 +31,7 @@ struct Vector<T, 2> {
     y -= other.y;
   }
 
-  Vector<T, 2> operator*(T other) {
+  Vector<T, 2> operator*(T other) const {
     return Vector<T, 2>(x * other, y * other);
   }
 };

@@ -200,16 +200,15 @@ struct Storage {
 
   int size;
 
-  Storage(int capacity) : data("storage", capacity) {}
+  Storage(int capacity) : data("storage", capacity), size(0) {}
 
   template <typename Iter, typename F>
   Range insert_iter(Iter iter, F callback) {
-    int start = size;
     ElementHandle<Types...> handle(data, size);
+    int start = size;
     for (auto data : iter) {
-      handle.index = size;
+      handle.index = size++;
       callback(data, handle);
-      size++;
     }
     int length = size - start;
     return Range { start, length };
