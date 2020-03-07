@@ -16,6 +16,24 @@ struct Vector<T, 2> {
   Vector<T, 2> operator+(Vector<T, 2> other) {
     return Vector<T, 2>(x + other.x, y + other.y);
   }
+
+  Vector<T, 2> operator-(Vector<T, 2> other) {
+    return Vector<T, 2>(x - other.x, y - other.y);
+  }
+
+  void operator+=(Vector<T, 2> other) {
+    x += other.x;
+    y += other.y;
+  }
+
+  void operator-=(Vector<T, 2> other) {
+    x -= other.x;
+    y -= other.y;
+  }
+
+  Vector<T, 2> operator*(T other) {
+    return Vector<T, 2>(x * other, y * other);
+  }
 };
 
 template <class T>
