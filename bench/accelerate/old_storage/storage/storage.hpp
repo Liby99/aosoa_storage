@@ -12,18 +12,23 @@
 
 namespace storage {
 
-  template <class ExSpace, class MemSpace, std::size_t BinSize, typename... Types>
+  template <class ExSpace,
+            class MemSpace,
+            std::size_t BinSize,
+            typename... Types>
   struct Storage {
 
     using Self = Storage<ExSpace, MemSpace, BinSize, Types...>;
 
-    using CabanaDataTypes = Cabana::MemberTypes<typename TypeTransform<Types>::Type...>;
+    using CabanaDataTypes =
+        Cabana::MemberTypes<typename TypeTransform<Types>::Type...>;
 
     using KokkosDeviceType = Kokkos::Device<ExSpace, MemSpace>;
 
     using CabanaTuple = Cabana::Tuple<CabanaDataTypes>;
 
-    using CabanaAosoa = Cabana::AoSoA<CabanaDataTypes, KokkosDeviceType, BinSize>;
+    using CabanaAosoa =
+        Cabana::AoSoA<CabanaDataTypes, KokkosDeviceType, BinSize>;
 
     using Tuple = std::tuple<Types...>;
 
@@ -79,7 +84,8 @@ namespace storage {
         std::optional<std::size_t> data_index = data_indices[i];
         if (data_index.has_value()) {
           using Transf = TypeTransform<TypeAt<Index>>;
-          TypeAt<Index> &res = Transf::template get<Index>(data, data_index.value());
+          TypeAt<Index> &res =
+              Transf::template get<Index>(data, data_index.value());
           return OptionalRefAt<Index>{res};
         }
       }
@@ -141,11 +147,14 @@ namespace storage {
 
     template <std::size_t Index>
     void fill(TypeAt<Index> component) {
-      par_each(KOKKOS_LAMBDA(int, auto data) { std::get<Index>(data) = component; });
+      par_each(
+          KOKKOS_LAMBDA(int, auto data) { std::get<Index>(data) = component; });
     }
 
     void fill(Types... components) {
-      par_each(KOKKOS_LAMBDA(int, auto data) { SelfRefTupleUpdator::set(data, components...); });
+      par_each(KOKKOS_LAMBDA(int, auto data) {
+        SelfRefTupleUpdator::set(data, components...);
+      });
     }
 
     bool update(std::size_t i, Types... components) {
@@ -216,17 +225,23 @@ namespace storage {
       Kokkos::parallel_for(linear_policy, kernel, "storage_par_each");
     }
 
-    template <typename OtherExSpace, typename OtherMemSpace, std::size_t OtherBinSize>
-    void deep_copy_to(Storage<OtherExSpace, OtherMemSpace, OtherBinSize, Types...> &other) {
+    template <typename OtherExSpace,
+              typename OtherMemSpace,
+              std::size_t OtherBinSize>
+    void deep_copy_to(
+        Storage<OtherExSpace, OtherMemSpace, OtherBinSize, Types...> &other) {
       Cabana::deep_copy(data, other.data);
       other.size = size;
-      other.data_indices = std::vector<std::optional<std::size_t>>(data_indices);
+      other.data_indices =
+          std::vector<std::optional<std::size_t>>(data_indices);
       other.global_indices = std::vector<std::size_t>(global_indices);
     }
 
     template <typename... OtherStorages>
-    JoinedStorage<ExSpace, Self, OtherStorages...> join(OtherStorages &... other_storages) {
-      return JoinedStorage<ExSpace, Self, OtherStorages...>(*this, other_storages...);
+    JoinedStorage<ExSpace, Self, OtherStorages...>
+    join(OtherStorages &... other_storages) {
+      return JoinedStorage<ExSpace, Self, OtherStorages...>(*this,
+                                                            other_storages...);
     }
 
   private:

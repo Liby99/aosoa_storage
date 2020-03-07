@@ -19,7 +19,8 @@ struct GridIterator<2> {
   }
 
   static IteratorRange<GridIterator<2>> range(Vector<int, 2> size) {
-    return make_range(GridIterator<2>(size.x, size.y), GridIterator<2>(size.x, size.y, true));
+    return make_range(GridIterator<2>(size.x, size.y),
+                      GridIterator<2>(size.x, size.y, true));
   }
 
   Vector<int, 2> operator*() {
@@ -46,7 +47,8 @@ struct GridIterator<3> {
 
   GridIterator(int x, int y, int z) : x(x), y(y), z(z), i(0), j(0), k(0) {}
 
-  GridIterator(int x, int y, int z, bool _) : x(x), y(y), z(z), i(0), j(0), k(z) {}
+  GridIterator(int x, int y, int z, bool _)
+      : x(x), y(y), z(z), i(0), j(0), k(z) {}
 
   static IteratorRange<GridIterator<3>> range(int x, int y, int z) {
     return make_range(GridIterator<3>(x, y, z), GridIterator<3>(x, y, z, true));

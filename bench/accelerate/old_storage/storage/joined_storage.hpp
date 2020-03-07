@@ -35,18 +35,22 @@ namespace storage {
 
   template <std::size_t Index, typename S, typename... Storages>
   class JoinedStorageGroup<Index, S, Storages...>
-      : public JoinedStorageBase<Index, S>, public JoinedStorageGroup<Index + 1, Storages...> {
+      : public JoinedStorageBase<Index, S>,
+        public JoinedStorageGroup<Index + 1, Storages...> {
   public:
     using RefTuple = decltype(std::tuple_cat(
         std::declval<typename JoinedStorageBase<Index, S>::RefTuple>(),
-        std::declval<typename JoinedStorageGroup<Index + 1, Storages...>::RefTuple>()));
+        std::declval<
+            typename JoinedStorageGroup<Index + 1, Storages...>::RefTuple>()));
 
     using ConstRefTuple = decltype(std::tuple_cat(
         std::declval<typename JoinedStorageBase<Index, S>::ConstRefTuple>(),
-        std::declval<typename JoinedStorageGroup<Index + 1, Storages...>::ConstRefTuple>()));
+        std::declval<typename JoinedStorageGroup<Index + 1, Storages...>::
+                         ConstRefTuple>()));
 
     JoinedStorageGroup(S &s, Storages &... ss)
-        : JoinedStorageBase<Index, S>(s), JoinedStorageGroup<Index + 1, Storages...>(ss...) {}
+        : JoinedStorageBase<Index, S>(s),
+          JoinedStorageGroup<Index + 1, Storages...>(ss...) {}
 
     bool contains(std::size_t i) const {
       if (JoinedStorageBase<Index, S>::storage.contains(i))
@@ -59,13 +63,15 @@ namespace storage {
     }
 
     RefTuple get_unchecked(std::size_t i) {
-      return std::tuple_cat(JoinedStorageBase<Index, S>::storage.get_unchecked(i),
-                            JoinedStorageGroup<Index + 1, Storages...>::get_unchecked(i));
+      return std::tuple_cat(
+          JoinedStorageBase<Index, S>::storage.get_unchecked(i),
+          JoinedStorageGroup<Index + 1, Storages...>::get_unchecked(i));
     }
 
     ConstRefTuple get_unchecked_const(std::size_t i) const {
-      return std::tuple_cat(JoinedStorageBase<Index, S>::storage.get_unchecked_const(i),
-                            JoinedStorageGroup<Index + 1, Storages...>::get_unchecked_const(i));
+      return std::tuple_cat(
+          JoinedStorageBase<Index, S>::storage.get_unchecked_const(i),
+          JoinedStorageGroup<Index + 1, Storages...>::get_unchecked_const(i));
     }
   };
 

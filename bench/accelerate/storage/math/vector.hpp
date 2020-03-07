@@ -6,7 +6,9 @@ struct Vector {};
 template <class T>
 struct Vector<T, 2> {
   union {
-    struct { T x, y; };
+    struct {
+      T x, y;
+    };
     T data[2];
   };
 
@@ -43,7 +45,7 @@ struct Vector<T, 2> {
     return Vector<U, 2>((U)x, (U)y);
   }
 
-  inline T operator() (int i) const {
+  inline T operator()(int i) const {
     return data[i];
   }
 };
@@ -51,7 +53,9 @@ struct Vector<T, 2> {
 template <class T>
 struct Vector<T, 3> {
   union {
-    struct { T x, y, z; };
+    struct {
+      T x, y, z;
+    };
     T data[3];
   };
 
@@ -90,7 +94,7 @@ struct Vector<T, 3> {
     return Vector<U, 3>((U)x, (U)y, (U)z);
   }
 
-  inline T operator() (int i) const {
+  inline T operator()(int i) const {
     return data[i];
   }
 };

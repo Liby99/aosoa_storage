@@ -79,8 +79,10 @@ struct Step2<T, 2> {
     auto slice_mass = Cabana::slice<2>(particles);
 
     auto kernel = KOKKOS_LAMBDA(const int s, const int a) {
-      auto x = Vector<T, 2>(slice_pos.access(s, a, 0), slice_pos.access(s, a, 1));
-      auto v = Vector<T, 2>(slice_vel.access(s, a, 0), slice_vel.access(s, a, 1));
+      auto x =
+          Vector<T, 2>(slice_pos.access(s, a, 0), slice_pos.access(s, a, 1));
+      auto v =
+          Vector<T, 2>(slice_vel.access(s, a, 0), slice_vel.access(s, a, 1));
 
       v += gravity * dt;
       x += v * dt;
@@ -107,8 +109,12 @@ struct Step2<T, 3> {
     auto slice_mass = Cabana::slice<2>(particles);
 
     auto kernel = KOKKOS_LAMBDA(const int s, const int a) {
-      auto x = Vector<T, 3>(slice_pos.access(s, a, 0), slice_pos.access(s, a, 1), slice_pos.access(s, a, 2));
-      auto v = Vector<T, 3>(slice_vel.access(s, a, 0), slice_vel.access(s, a, 1), slice_vel.access(s, a, 2));
+      auto x =
+          Vector<T, 3>(slice_pos.access(s, a, 0), slice_pos.access(s, a, 1),
+                       slice_pos.access(s, a, 2));
+      auto v =
+          Vector<T, 3>(slice_vel.access(s, a, 0), slice_vel.access(s, a, 1),
+                       slice_vel.access(s, a, 2));
 
       v += gravity * dt;
       x += v * dt;
@@ -147,7 +153,8 @@ void run() {
     S<T, D>::step(particles, dt, 0, particle_count);
   }
 
-  std::cout << "\nFinished in " << timer.elapsed<Timer::Milliseconds>() << " ms" << std::endl;
+  std::cout << "\nFinished in " << timer.elapsed<Timer::Milliseconds>() << " ms"
+            << std::endl;
 }
 
 int main() {

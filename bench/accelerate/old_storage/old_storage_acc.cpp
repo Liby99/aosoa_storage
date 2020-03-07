@@ -68,7 +68,8 @@ void run() {
     });
   }
 
-  std::cout << "\nFinished in " << timer.elapsed<Timer::Milliseconds>() << " ms" << std::endl;
+  std::cout << "\nFinished in " << timer.elapsed<Timer::Milliseconds>() << " ms"
+            << std::endl;
 }
 
 int main() {

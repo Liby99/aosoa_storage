@@ -14,7 +14,8 @@ namespace storage {
     }
 
     template <std::size_t Index, typename AosoaType>
-    static STORAGE_FORCE_INLINE void set(AosoaType &data, std::size_t i, T &value) {
+    static STORAGE_FORCE_INLINE void
+    set(AosoaType &data, std::size_t i, T &value) {
       Cabana::slice<Index, AosoaType>(data)(i) = value;
     }
   };
@@ -26,7 +27,8 @@ namespace storage {
     using From = math::Vector<T, dim>;
 
     template <std::size_t Index, typename AosoaType>
-    static STORAGE_FORCE_INLINE From &get(const AosoaType &data, std::size_t i) {
+    static STORAGE_FORCE_INLINE From &get(const AosoaType &data,
+                                          std::size_t i) {
       auto slice = Cabana::slice<Index, AosoaType>(data);
       auto offset = i & (slice.extent(1) - 1); // i % slice.extent(1)
       T *ptr = &slice(i - offset, offset);
@@ -35,7 +37,8 @@ namespace storage {
     }
 
     template <std::size_t Index, typename AosoaType>
-    static STORAGE_FORCE_INLINE void set(AosoaType &data, std::size_t i, const From &value) {
+    static STORAGE_FORCE_INLINE void
+    set(AosoaType &data, std::size_t i, const From &value) {
       auto slice = Cabana::slice<Index, AosoaType>(data);
       auto offset = i & (slice.extent(1) - 1);
       T *ptr = &slice(i - offset, offset);
@@ -51,7 +54,8 @@ namespace storage {
     using From = math::Matrix<T, dim>;
 
     template <std::size_t Index, typename AosoaType>
-    static STORAGE_FORCE_INLINE From &get(const AosoaType &data, std::size_t i) {
+    static STORAGE_FORCE_INLINE From &get(const AosoaType &data,
+                                          std::size_t i) {
       auto slice = Cabana::slice<Index, AosoaType>(data);
       auto offset = i & (slice.extent(1) - 1);
       T *ptr = &slice(i - offset, offset * dim);
@@ -60,7 +64,8 @@ namespace storage {
     }
 
     template <std::size_t Index, typename AosoaType>
-    static STORAGE_FORCE_INLINE void set(AosoaType &data, std::size_t i, const From &value) {
+    static STORAGE_FORCE_INLINE void
+    set(AosoaType &data, std::size_t i, const From &value) {
       auto slice = Cabana::slice<Index, AosoaType>(data);
       auto offset = i & (slice.extent(1) - 1);
       T *ptr = &slice(i - offset, offset * dim);

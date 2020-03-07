@@ -31,7 +31,8 @@ struct Step2 {
     xvm.simd_par_each(KOKKOS_LAMBDA(auto &handle) {
       for (int i = 0; i < D; i++) {
         slice_vel.access(handle.s, handle.a, i) += dv(i);
-        slice_pos.access(handle.s, handle.a, i) += slice_vel.access(handle.s, handle.a, i) * dt;
+        slice_pos.access(handle.s, handle.a, i) +=
+            slice_vel.access(handle.s, handle.a, i) * dt;
       }
     });
   }
@@ -62,7 +63,8 @@ void run() {
     S<T, D>::step(xvm, dt, gravity);
   }
 
-  std::cout << "\nFinished in " << timer.elapsed<Timer::Milliseconds>() << " ms" << std::endl;
+  std::cout << "\nFinished in " << timer.elapsed<Timer::Milliseconds>() << " ms"
+            << std::endl;
 }
 
 int main() {
