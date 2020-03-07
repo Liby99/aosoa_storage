@@ -15,6 +15,12 @@ struct Storage {
 
   using CabanaAoSoA = Cabana::AoSoA<MemberTypes, KokkosDevice, BIN_SIZE>;
 
+  template <int Index>
+  using TypeAt = typename ExtractTypeAt<Index, Types...>::Type;
+
+  template <int Index>
+  using SliceAt = decltype(Cabana::slice<Index>(std::declval<CabanaAoSoA>()));
+
   CabanaAoSoA data;
 
   int size;
@@ -31,6 +37,11 @@ struct Storage {
     }
     int length = size - start;
     return Range{start, length};
+  }
+
+  template <int Index>
+  SliceAt<Index> slice() {
+    return Cabana::slice<Index>(data);
   }
 
   template <typename F>

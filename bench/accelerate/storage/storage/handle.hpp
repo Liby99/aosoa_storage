@@ -33,12 +33,20 @@ struct ElementHandle {
   template <int Index>
   using TypeAt = typename ExtractTypeAt<Index, Types...>::Type;
 
+  template <int Index>
+  using SliceAt = decltype(Cabana::slice<Index>(std::declval<CabanaAoSoA>()));
+
   const SliceHolder<0, CabanaAoSoA, Types...> &slice_holder;
 
   int i;
 
   ElementHandle(const SliceHolder<0, CabanaAoSoA, Types...> &slice_holder, int i)
       : slice_holder(slice_holder), i(i) {}
+
+  template <int Index>
+  inline const SliceAt<Index> &slice() const {
+    return ((const SliceHolderBase<Index, CabanaAoSoA> &) slice_holder).slice;
+  }
 
   template <int Index>
   inline TypeAt<Index> fetch() const {
@@ -62,6 +70,9 @@ struct SimdElementHandle {
   template <int Index>
   using TypeAt = typename ExtractTypeAt<Index, Types...>::Type;
 
+  template <int Index>
+  using SliceAt = decltype(Cabana::slice<Index>(std::declval<CabanaAoSoA>()));
+
   const SliceHolder<0, CabanaAoSoA, Types...> &slice_holder;
 
   int s, a;
@@ -70,14 +81,17 @@ struct SimdElementHandle {
       : slice_holder(slice_holder), s(s), a(a) {}
 
   template <int Index>
+  inline const SliceAt<Index> &slice() const {
+    return ((const SliceHolderBase<Index, CabanaAoSoA> &) slice_holder).slice;
+  }
+
+  template <int Index>
   inline TypeAt<Index> fetch() const {
-    const auto &slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
-    return TypeTransform<TypeAt<Index>>::fetch(slice, s, a);
+    return TypeTransform<TypeAt<Index>>::fetch(slice<Index>(), s, a);
   }
 
   template <int Index>
   inline void store(const TypeAt<Index> &comp) {
-    const auto &slice = static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
-    TypeTransform<TypeAt<Index>>::store(slice, s, a, comp);
+    TypeTransform<TypeAt<Index>>::store(slice<Index>(), s, a, comp);
   }
 };
