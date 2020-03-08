@@ -15,7 +15,6 @@ CUDA_ARCH := TURING75
 
 CUDA_COMPILER := $(shell which nvcc_wrapper)
 
-# CMake command
 ifeq ($(ENABLE_CUDA), On)
 CMAKE_CMD := cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) \
 									 -D CMAKE_CXX_COMPILER=$(CUDA_COMPILER) \
@@ -58,29 +57,20 @@ all: $(BUILD_DIR)/Makefile
 $(BUILD_DIR)/Makefile: ./CMakeLists.txt | $(BUILD_DIR)
 	@ make configure
 
-# `make configure`
-# Run cmake on the build directory
 configure: $(BUILD_DIR)
 	@ cd $(BUILD_DIR); $(CMAKE_CMD)
 .PHONY: configure
 
-# Create the build directory
 $(BUILD_DIR):
 	@ mkdir -p $(BUILD_DIR)
 
-# `make test`
-# Run all the test in the build directory
 test: all
 	@ cd $(BUILD_DIR); make test
 
-# `make clean`
-# Clean the build directory specified by you
 clean:
 	@ rm -rf $(BUILD_DIR)
 .PHONY: clean
 
-# `make format`
-# Format all the files
 format:
 	@ find include tests bench -iname "*.*pp" -exec clang-format -i {} \;
 .PHONY: format

@@ -9,19 +9,19 @@ template <int Index, typename AoSoA>
 struct SliceHolderBase {
   decltype(Cabana::slice<Index>(std::declval<AoSoA>())) slice;
 
-  SliceHolderBase(AoSoA &aosoa) : slice(Cabana::slice<Index>(aosoa)) {}
+  SliceHolderBase(const AoSoA &aosoa) : slice(Cabana::slice<Index>(aosoa)) {}
 };
 
 template <int Index, typename AoSoA, typename... Types>
 struct SliceHolder {
-  SliceHolder(AoSoA &aosoa) {}
+  SliceHolder(const AoSoA &aosoa) {}
 };
 
 template <int Index, typename AoSoA, typename T, typename... Types>
 struct SliceHolder<Index, AoSoA, T, Types...>
     : public SliceHolderBase<Index, AoSoA>,
       public SliceHolder<Index + 1, AoSoA, Types...> {
-  SliceHolder(AoSoA &aosoa)
+  SliceHolder(const AoSoA &aosoa)
       : SliceHolderBase<Index, AoSoA>(aosoa),
         SliceHolder<Index + 1, AoSoA, Types...>(aosoa) {}
 };
