@@ -2,7 +2,7 @@ CURR_DIR = $(shell pwd)
 
 BUILD_DIR := build
 
-BUILD_TYPE := Debug
+BUILD_TYPE := Release
 
 LOWER_BUILD_TYPE = `echo $(BUILD_TYPE) | tr A-Z a-z`
 
