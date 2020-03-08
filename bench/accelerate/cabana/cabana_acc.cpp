@@ -163,6 +163,69 @@ struct Step3 {
   }
 };
 
+template <class T, int D>
+struct Step4 {
+  static void step(Particles<T, D> &particles, T dt, int start, int amount);
+};
+
+template <class T>
+struct Step4<T, 2> {
+  static void step(Particles<T, 2> &particles, T dt, int start, int amount) {
+    Vector<T, 2> gravity(0, -9.8);
+
+    auto slice_pos = Cabana::slice<0>(particles);
+    auto slice_vel = Cabana::slice<1>(particles);
+    auto slice_mass = Cabana::slice<2>(particles);
+
+    auto kernel = KOKKOS_LAMBDA(const int i) {
+      auto x = Vector<T, 2>(slice_pos(i, 0), slice_pos(i, 1));
+      auto v = Vector<T, 2>(slice_vel(i, 0), slice_vel(i, 1));
+
+      v += gravity * dt;
+      x += v * dt;
+
+      slice_vel(i, 0) = v.x;
+      slice_vel(i, 1) = v.y;
+
+      slice_pos(i, 0) = x.x;
+      slice_pos(i, 1) = x.y;
+    };
+
+    Kokkos::RangePolicy<ExecutionSpace> linear_policy(start, amount);
+    Kokkos::parallel_for(linear_policy, kernel, "step");
+  }
+};
+
+template <class T>
+struct Step4<T, 3> {
+  static void step(Particles<T, 3> &particles, T dt, int start, int amount) {
+    Vector<T, 3> gravity(0, -9.8, 0);
+
+    auto slice_pos = Cabana::slice<0>(particles);
+    auto slice_vel = Cabana::slice<1>(particles);
+    auto slice_mass = Cabana::slice<2>(particles);
+
+    auto kernel = KOKKOS_LAMBDA(const int i) {
+      auto x = Vector<T, 3>(slice_pos(i, 0), slice_pos(i, 1), slice_pos(i, 2));
+      auto v = Vector<T, 3>(slice_vel(i, 0), slice_vel(i, 1), slice_vel(i, 2));
+
+      v += gravity * dt;
+      x += v * dt;
+
+      slice_vel(i, 0) = v.x;
+      slice_vel(i, 1) = v.y;
+      slice_vel(i, 2) = v.z;
+
+      slice_pos(i, 0) = x.x;
+      slice_pos(i, 1) = x.y;
+      slice_pos(i, 2) = x.z;
+    };
+
+    Kokkos::RangePolicy<ExecutionSpace> linear_policy(start, amount);
+    Kokkos::parallel_for(linear_policy, kernel, "step");
+  }
+};
+
 template <template <class, int> class S, class T, int D>
 void run() {
   Timer timer;
@@ -213,5 +276,13 @@ int main() {
   run<Step3, float, 3>();
   std::cout << "Step3, double, 3" << std::endl;
   run<Step3, double, 3>();
+  std::cout << "Step4, float, 2" << std::endl;
+  run<Step4, float, 2>();
+  std::cout << "Step4, double, 2" << std::endl;
+  run<Step4, double, 2>();
+  std::cout << "Step4, float, 3" << std::endl;
+  run<Step4, float, 3>();
+  std::cout << "Step4, double, 3" << std::endl;
+  run<Step4, double, 3>();
   Kokkos::finalize();
 }
