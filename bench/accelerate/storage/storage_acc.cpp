@@ -38,6 +38,35 @@ struct Step2 {
   }
 };
 
+template <class T, int D>
+struct Step3 {
+  static void step(XVM<T, D> &xvm, T dt, Vector<T, D> &gravity) {
+    xvm.par_each(KOKKOS_LAMBDA(auto &handle) {
+      Vector<T, D> x = handle.template fetch<0>();
+      Vector<T, D> v = handle.template fetch<1>();
+      v += gravity * dt;
+      x += v * dt;
+      handle.template store<0>(x);
+      handle.template store<1>(v);
+    });
+  }
+};
+
+template <class T, int D>
+struct Step4 {
+  static void step(XVM<T, D> &xvm, T dt, Vector<T, D> &gravity) {
+    Vector<T, D> dv = gravity * dt;
+    auto slice_pos = xvm.template slice<0>();
+    auto slice_vel = xvm.template slice<1>();
+    xvm.par_each(KOKKOS_LAMBDA(auto &handle) {
+      for (int i = 0; i < D; i++) {
+        slice_vel(handle.i, i) += dv(i);
+        slice_pos(handle.i, i) += slice_vel(handle.i, i) * dt;
+      }
+    });
+  }
+};
+
 template <template <class, int> class S, class T, int D>
 void run() {
   Timer timer;
@@ -85,5 +114,21 @@ int main() {
   run<Step2, float, 3>();
   std::cout << "Step2, double, 3" << std::endl;
   run<Step2, double, 3>();
+  std::cout << "Step3, float, 2" << std::endl;
+  run<Step3, float, 2>();
+  std::cout << "Step3, double, 2" << std::endl;
+  run<Step3, double, 2>();
+  std::cout << "Step3, float, 3" << std::endl;
+  run<Step3, float, 3>();
+  std::cout << "Step3, double, 3" << std::endl;
+  run<Step3, double, 3>();
+  std::cout << "Step4, float, 2" << std::endl;
+  run<Step4, float, 2>();
+  std::cout << "Step4, double, 2" << std::endl;
+  run<Step4, double, 2>();
+  std::cout << "Step4, float, 3" << std::endl;
+  run<Step4, float, 3>();
+  std::cout << "Step4, double, 3" << std::endl;
+  run<Step4, double, 3>();
   Kokkos::finalize();
 }

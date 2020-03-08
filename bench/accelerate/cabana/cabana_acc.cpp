@@ -133,6 +133,36 @@ struct Step2<T, 3> {
   }
 };
 
+template <class T, int D>
+struct Step3 {
+  static void step(Particles<T, D> &particles, T dt, int start, int amount) {
+    T gravity[D];
+    for (int i = 0; i < D; i++) {
+      gravity[i] = 0.0;
+    }
+    gravity[1] = -9.8;
+
+    auto slice_pos = Cabana::slice<0>(particles);
+    auto slice_vel = Cabana::slice<1>(particles);
+    auto slice_mass = Cabana::slice<2>(particles);
+
+    auto kernel = KOKKOS_LAMBDA(const int i) {
+
+      for (int j = 0; j < D; j++) {
+        slice_vel(i, j) += gravity[j] * dt;
+      }
+
+      // Set position
+      for (int j = 0; j < D; j++) {
+        slice_pos(i, j) += slice_vel(i, j) * dt;
+      }
+    };
+
+    Kokkos::RangePolicy<ExecutionSpace> linear_policy(start, amount);
+    Kokkos::parallel_for(linear_policy, kernel, "step");
+  }
+};
+
 template <template <class, int> class S, class T, int D>
 void run() {
   Timer timer;
@@ -175,5 +205,13 @@ int main() {
   run<Step2, float, 3>();
   std::cout << "Step2, double, 3" << std::endl;
   run<Step2, double, 3>();
+  std::cout << "Step3, float, 2" << std::endl;
+  run<Step3, float, 2>();
+  std::cout << "Step3, double, 2" << std::endl;
+  run<Step3, double, 2>();
+  std::cout << "Step3, float, 3" << std::endl;
+  run<Step3, float, 3>();
+  std::cout << "Step3, double, 3" << std::endl;
+  run<Step3, double, 3>();
   Kokkos::finalize();
 }
