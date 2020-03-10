@@ -4,23 +4,49 @@
 #include "./storages.hpp"
 #include "./vector.hpp"
 
+template <class T, int D>
+struct Init {};
+
 template <class T>
-T random() {
-  return static_cast<T>(rand()) / static_cast<T>(RAND_MAX);
-}
+struct Init<T, 2> {
+  static void init(Particles<T, 2> &particles, int side) {
+    auto x_slice = Cabana::slice<0>(particles);
+    for (int i = 0; i < side; i++) {
+      for (int j = 0; j < side; j++) {
+        int index = i + j * side;
+        x_slice(index, 0) = (T) i;
+        x_slice(index, 1) = (T) j;
+      }
+    }
+  }
+};
+
+template <class T>
+struct Init<T, 3> {
+  static void init(Particles<T, 3> &particles, int side) {
+    auto x_slice = Cabana::slice<0>(particles);
+    for (int i = 0; i < side; i++) {
+      for (int j = 0; j < side; j++) {
+        for (int k = 0; k < side; k++) {
+          int index = i + j * side + k * side * side;
+          x_slice(index, 0) = (T) i;
+          x_slice(index, 1) = (T) j;
+          x_slice(index, 2) = (T) k;
+        }
+      }
+    }
+  }
+};
 
 template <class T, int D>
-void initialize(Particles<T, D> &particles, int start, int amount) {
+void initialize(Particles<T, D> &particles, int side, int start, int amount) {
+  Init<T, D>::init(particles, side);
+
   auto slice_pos = Cabana::slice<0>(particles);
   auto slice_vel = Cabana::slice<1>(particles);
   auto slice_mass = Cabana::slice<2>(particles);
 
   auto kernel = KOKKOS_LAMBDA(const int s, const int a) {
-    // Set position
-    for (int j = 0; j < D; j++) {
-      slice_pos.access(s, a, j) = 0.0;
-    }
-
     // Set velocity
     for (int j = 0; j < D; j++) {
       slice_vel.access(s, a, j) = 0.0;
@@ -239,7 +265,7 @@ void run() {
   Particles<T, D> particles("particles", particle_count);
 
   // Initialize particles
-  initialize<T, D>(particles, 0, particle_count);
+  initialize<T, D>(particles, side, 0, particle_count);
 
   for (int frame = 0; frame < 100; frame++) {
     std::cout << "Frame " << frame << "\r" << std::flush;

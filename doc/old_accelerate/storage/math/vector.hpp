@@ -12,11 +12,11 @@ struct Vector<T, 2> {
     T data[2];
   };
 
-  inline Vector() : Vector(0) {}
+  DeviceFlag Vector() : Vector(0) {}
 
-  inline Vector(T x) : Vector(x, x) {}
+  DeviceFlag Vector(T x) : Vector(x, x) {}
 
-  inline Vector(T x, T y) : x(x), y(y) {}
+  DeviceFlag Vector(T x, T y) : x(x), y(y) {}
 
   inline Vector<T, 2> operator+(Vector<T, 2> other) const {
     return Vector<T, 2>(x + other.x, y + other.y);
@@ -59,11 +59,11 @@ struct Vector<T, 3> {
     T data[3];
   };
 
-  Vector() : Vector(0) {}
+  DeviceFlag Vector() : Vector(0) {}
 
-  Vector(T x) : Vector(x, x, x) {}
+  DeviceFlag Vector(T x) : Vector(x, x, x) {}
 
-  Vector(T x, T y, T z) : x(x), y(y), z(z) {}
+  DeviceFlag Vector(T x, T y, T z) : x(x), y(y), z(z) {}
 
   inline Vector<T, 3> operator+(Vector<T, 3> other) const {
     return Vector<T, 3>(x + other.x, y + other.y, z + other.z);

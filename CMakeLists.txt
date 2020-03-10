@@ -45,8 +45,10 @@ download_project(
 set(Kokkos_ENABLE_SERIAL On CACHE INTERNAL "")
 if(${STORAGE_ENABLE_CUDA})
   set(Kokkos_ENABLE_CUDA On CACHE INTERNAL "")
+  set(Cabana_ENABLE_Cuda On CACHE INTERNAL "")
 elseif(${STORAGE_ENABLE_OPENMP})
   set(Kokkos_ENABLE_OPENMP On CACHE INTERNAL "")
+  set(Cabana_ENABLE_OpenMP On CACHE INTERNAL "")
 endif()
 
 add_subdirectory(${Kokkos_SOURCE_DIR} ${Kokkos_BINARY_DIR})

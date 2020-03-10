@@ -9,6 +9,30 @@
 #include "./type_transform.hpp"
 #include "./utils.hpp"
 
+#ifdef STORAGE_ENABLED_CUDA
+#include <nvfunctional>
+#define Fn nvstd::function
+#else
+#include <functional>
+#define Fn std::function
+#endif
+
+template <class AoSoA, typename... Types>
+struct ParEachFunctor {
+  const SliceHolder<0, AoSoA, Types...> &slice_holder;
+  const Fn<void(ElementHandle<Types...> &)> &callback;
+
+  ParEachFunctor(
+    const AoSoA &data,
+    const Fn<void(ElementHandle<Types...> &)> &callback
+  ) : slice_holder(data), callback(callback) {}
+
+  KOKKOS_INLINE_FUNCTION void operator() (const int i) const {
+    ElementHandle<Types...> handle(slice_holder, i);
+    callback(handle);
+  }
+};
+
 template <typename... Types>
 struct Storage {
   using MemberTypes = Cabana::MemberTypes<typename TypeTransform<Types>::To...>;
@@ -21,6 +45,10 @@ struct Storage {
   template <int Index>
   using SliceAt = decltype(Cabana::slice<Index>(std::declval<CabanaAoSoA>()));
 
+  using Handle = ElementHandle<Types...>;
+
+  using SimdHandle = SimdElementHandle<Types...>;
+
   CabanaAoSoA data;
 
   int size;
@@ -32,7 +60,7 @@ struct Storage {
     SliceHolder<0, CabanaAoSoA, Types...> slice_holder(data);
     int start = size;
     for (auto data : iter) {
-      ElementHandle<Types...> handle(slice_holder, size++);
+      Handle handle(slice_holder, size++);
       callback(data, handle);
     }
     int length = size - start;
@@ -48,30 +76,24 @@ struct Storage {
   void each(F callback) const {
     SliceHolder<0, CabanaAoSoA, Types...> slice_holder(data);
     for (int i = 0; i < size; i++) {
-      ElementHandle<Types...> handle(slice_holder, i);
+      Handle handle(slice_holder, i);
       callback(handle);
     }
   }
 
-  template <typename F>
-  void par_each(F callback) const {
-    SliceHolder<0, CabanaAoSoA, Types...> slice_holder(data);
-    auto kernel = KOKKOS_LAMBDA(const int i) {
-      ElementHandle<Types...> handle(slice_holder, i);
-      callback(handle);
-    };
+  void par_each(const Fn<void(Handle &)> &callback) const {
+    ParEachFunctor<CabanaAoSoA, Types...> kernel(data, callback);
     Kokkos::RangePolicy<ExecutionSpace> linear_policy(0, size);
     Kokkos::parallel_for(linear_policy, kernel, "par_each");
   }
 
-  template <typename F>
-  void simd_par_each(F callback) const {
-    SliceHolder<0, CabanaAoSoA, Types...> slice_holder(data);
-    auto kernel = KOKKOS_LAMBDA(const int s, const int a) {
-      SimdElementHandle<Types...> handle(slice_holder, s, a);
-      callback(handle);
-    };
-    Cabana::SimdPolicy<BIN_SIZE, ExecutionSpace> simd_policy(0, size);
-    Cabana::simd_parallel_for(simd_policy, kernel, "simd_par_each");
-  }
+  // void simd_par_each(Fn<void(SimdHandle &)> callback) const {
+  //   SliceHolder<0, CabanaAoSoA, Types...> slice_holder(data);
+  //   auto kernel = KOKKOS_LAMBDA(const int s, const int a) {
+  //     SimdHandle handle(slice_holder, s, a);
+  //     callback(handle);
+  //   };
+  //   Cabana::SimdPolicy<BIN_SIZE, ExecutionSpace> simd_policy(0, size);
+  //   Cabana::simd_parallel_for(simd_policy, kernel, "simd_par_each");
+  // }
 };

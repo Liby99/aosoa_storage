@@ -6,7 +6,7 @@
 #ifdef STORAGE_ENABLED_CUDA
 
 using ExecutionSpace = Kokkos::Cuda;
-using MemorySpace = Kokkos::CudaSpace;
+using MemorySpace = Kokkos::CudaUVMSpace;
 static const std::size_t BIN_SIZE = 32;
 
 #else

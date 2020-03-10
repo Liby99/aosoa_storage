@@ -42,24 +42,24 @@ struct ElementHandle {
 
   int i;
 
-  ElementHandle(const SliceHolder<0, CabanaAoSoA, Types...> &slice_holder,
+  DeviceFlag ElementHandle(const SliceHolder<0, CabanaAoSoA, Types...> &slice_holder,
                 int i)
       : slice_holder(slice_holder), i(i) {}
 
   template <int Index>
-  inline const SliceAt<Index> &slice() const {
+  KOKKOS_INLINE_FUNCTION const SliceAt<Index> &slice() const {
     return ((const SliceHolderBase<Index, CabanaAoSoA> &)slice_holder).slice;
   }
 
   template <int Index>
-  inline TypeAt<Index> fetch() const {
+  KOKKOS_INLINE_FUNCTION TypeAt<Index> fetch() const {
     const auto &slice =
         static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
     return TypeTransform<TypeAt<Index>>::fetch(slice, i);
   }
 
   template <int Index>
-  inline void store(const TypeAt<Index> &comp) {
+  KOKKOS_INLINE_FUNCTION void store(const TypeAt<Index> &comp) {
     const auto &slice =
         static_cast<SliceHolderBase<Index, CabanaAoSoA>>(slice_holder).slice;
     TypeTransform<TypeAt<Index>>::store(slice, i, comp);
@@ -82,23 +82,23 @@ struct SimdElementHandle {
 
   int s, a;
 
-  SimdElementHandle(const SliceHolder<0, CabanaAoSoA, Types...> &slice_holder,
+  DeviceFlag SimdElementHandle(const SliceHolder<0, CabanaAoSoA, Types...> &slice_holder,
                     int s,
                     int a)
       : slice_holder(slice_holder), s(s), a(a) {}
 
   template <int Index>
-  inline const SliceAt<Index> &slice() const {
+  KOKKOS_INLINE_FUNCTION const SliceAt<Index> &slice() const {
     return ((const SliceHolderBase<Index, CabanaAoSoA> &)slice_holder).slice;
   }
 
   template <int Index>
-  inline TypeAt<Index> fetch() const {
+  KOKKOS_INLINE_FUNCTION TypeAt<Index> fetch() const {
     return TypeTransform<TypeAt<Index>>::fetch(slice<Index>(), s, a);
   }
 
   template <int Index>
-  inline void store(const TypeAt<Index> &comp) {
+  KOKKOS_INLINE_FUNCTION void store(const TypeAt<Index> &comp) {
     TypeTransform<TypeAt<Index>>::store(slice<Index>(), s, a, comp);
   }
 };
