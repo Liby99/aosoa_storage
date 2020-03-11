@@ -10,13 +10,13 @@ namespace storage {
 
     using To = T;
 
-    template <class Slice>
-    KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const int i) const {
+    template <typename Slice>
+    static KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const int i) {
       return slice(i);
     }
 
-    template <class Slice>
-    KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const int i, const From &component) const {
+    template <typename Slice>
+    static KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const int i, const From &component) {
       slice(i) = component;
     }
   };
@@ -27,13 +27,13 @@ namespace storage {
 
     using To = T[2];
 
-    template <class Slice>
-    KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const int i) const {
+    template <typename Slice>
+    static KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const int i) {
       return From(slice(i, 0), slice(i, 1));
     }
 
-    template <class Slice>
-    KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const int i, const From &component) const {
+    template <typename Slice>
+    static KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const int i, const From &component) {
       slice(i, 0) = component(0);
       slice(i, 1) = component(1);
     }
@@ -45,13 +45,13 @@ namespace storage {
 
     using To = T[3];
 
-    template <class Slice>
-    KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const int i) const {
+    template <typename Slice>
+    static KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const int i) {
       return From(slice(i, 0), slice(i, 1), slice(i, 2));
     }
 
-    template <class Slice>
-    KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const int i, const From &component) const {
+    template <typename Slice>
+    static KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const int i, const From &component) {
       slice(i, 0) = component(0);
       slice(i, 1) = component(1);
       slice(i, 2) = component(2);

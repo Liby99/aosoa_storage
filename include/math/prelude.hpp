@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef STORAGE_ENABLED_CUDA
+#define FnFlag __host__ __device__
+#else
+#define FnFlag
+#endif
+
 #include "./vector.hpp"
 
 namespace storage_math {
