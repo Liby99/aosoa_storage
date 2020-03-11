@@ -12,6 +12,9 @@ using XVM = Full<Vector3f, Vector3f, float>;
 
 void run() {
   XVM xvm;
+  xvm.par_each(KOKKOS_LAMBDA(const XVM::Handle &handle) {
+    // Do nothing for now
+  });
 }
 
 int main() {

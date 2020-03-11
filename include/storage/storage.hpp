@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./type_transform.hpp"
+#include "./handle.hpp"
 #include "./utils.hpp"
 #include <Cabana_Core.hpp>
 
@@ -18,5 +19,7 @@ namespace storage {
 
     template <int Index>
     using TransformedTypeAt = typename TypeTransform<TypeAt<Index>>::To;
+
+    using Handle = LinearHandle<AoSoA, Types...>;
   };
 } // namespace storage
