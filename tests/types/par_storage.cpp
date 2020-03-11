@@ -7,21 +7,18 @@
 using namespace storage;
 using namespace storage_math;
 
-template <typename... Types>
-using Full = FullStorage<ExecutionSpace, MemorySpace, BIN_SIZE, Types...>;
-
-using XVM = Full<Vector3f, Vector3f, float>;
+using XVM = FullStorage<Config, Vector3f, Vector3f, float>;
 
 void run() {
   XVM xvm;
 
-  xvm.size = 1024;
+  // xvm.size = 1024;
 
-  xvm.each([](typename XVM::HostHandle &handle) {
-    handle.template set<0>(Vector3f(handle.i));
-    handle.template set<1>(Vector3f());
-    handle.template set<2>(0);
-  });
+  // xvm.each([](typename XVM::HostHandle &handle) {
+  //   handle.template set<0>(Vector3f(handle.i));
+  //   handle.template set<1>(Vector3f());
+  //   handle.template set<2>(0);
+  // });
 
   // std::cout << "hahahah" << std::endl;
 
@@ -41,10 +38,10 @@ void run() {
 
   // std::cout << "hahahah" << std::endl;
 
-  for (int i = 0; i < xvm.size; i++) {
-    auto x = xvm.template get<0>(i);
-    std::cout << i << ": " << x.x << " " << x.y << " " << x.z << std::endl;
-  }
+  // for (int i = 0; i < xvm.size; i++) {
+  //   auto x = xvm.template get<0>(i);
+  //   std::cout << i << ": " << x.x << " " << x.y << " " << x.z << std::endl;
+  // }
 
   xvm.push();
 

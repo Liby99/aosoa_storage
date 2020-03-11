@@ -1,7 +1,7 @@
 #include "../../common/config.hpp"
 
 using particle_fields = Cabana::MemberTypes<float[3], float[3], int>;
-using particle_list = Cabana::AoSoA<particle_fields,Kokkos::CudaSpace>;
+using particle_list = Cabana::AoSoA<particle_fields, KokkosDevice>;
 
 void run() {
   particle_list particles("particles", 100);

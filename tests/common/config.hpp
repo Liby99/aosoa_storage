@@ -2,22 +2,28 @@
 
 #include <Cabana_Core.hpp>
 
-// Execution space
+struct Config {
 #ifdef STORAGE_ENABLED_CUDA
 
-using ExecutionSpace = Kokkos::Cuda;
-using MemorySpace = Kokkos::CudaSpace;
-static const std::size_t BIN_SIZE = 32;
+  using DeviceExecutionSpace = Kokkos::Cuda;
+  using DeviceMemorySpace = Kokkos::CudaSpace;
 
 #else
 
-using MemorySpace = Kokkos::HostSpace;
-static const std::size_t BIN_SIZE = 4;
+  using DeviceMemorySpace = Kokkos::HostSpace;
 
 #ifdef STORAGE_ENABLED_OPENMP
-using ExecutionSpace = Kokkos::OpenMP;
+  using DeviceExecutionSpace = Kokkos::OpenMP;
 #else
-using ExecutionSpace = Kokkos::Serial;
+  using DeviceExecutionSpace = Kokkos::Serial;
 #endif // STORAGE_ENABLED_OPENMP
 
 #endif // STORAGE_ENABLED_CUDA
+
+#ifdef STORAGE_ENABLED_OPENMP
+  using HostExecutionSpace = Kokkos::OpenMP;
+#else
+  using HostExecutionSpace = Kokkos::Serial;
+#endif // STORAGE_ENABLED_OPENMP
+
+};
