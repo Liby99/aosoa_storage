@@ -14,35 +14,35 @@
 template <class T, int D>
 using XVM = Storage<Vector<T, D>, Vector<T, D>, T>;
 
-// template <class T, int D>
-// struct Step {
-//   static void step(XVM<T, D> &xvm, T dt, Vector<T, D> &gravity) {
-//     xvm.simd_par_each(KOKKOS_LAMBDA(typename XVM<T, D>::SimdHandle &handle) {
-//       Vector<T, D> x = handle.template fetch<0>();
-//       Vector<T, D> v = handle.template fetch<1>();
-//       v += gravity * dt;
-//       x += v * dt;
-//       handle.template store<0>(x);
-//       handle.template store<1>(v);
-//     });
-//   }
-// };
+template <class T, int D>
+struct Step {
+  static void step(XVM<T, D> &xvm, T dt, Vector<T, D> &gravity) {
+    xvm.simd_par_each(KOKKOS_LAMBDA(typename XVM<T, D>::SimdHandle &handle) {
+      Vector<T, D> x = handle.template fetch<0>();
+      Vector<T, D> v = handle.template fetch<1>();
+      v += gravity * dt;
+      x += v * dt;
+      handle.template store<0>(x);
+      handle.template store<1>(v);
+    });
+  }
+};
 
-// template <class T, int D>
-// struct Step2 {
-//   static void step(XVM<T, D> &xvm, T dt, Vector<T, D> &gravity) {
-//     Vector<T, D> dv = gravity * dt;
-//     auto slice_pos = xvm.template slice<0>();
-//     auto slice_vel = xvm.template slice<1>();
-//     xvm.simd_par_each(KOKKOS_LAMBDA(typename XVM<T, D>::SimdHandle &handle) {
-//       for (int i = 0; i < D; i++) {
-//         slice_vel.access(handle.s, handle.a, i) += dv(i);
-//         slice_pos.access(handle.s, handle.a, i) +=
-//             slice_vel.access(handle.s, handle.a, i) * dt;
-//       }
-//     });
-//   }
-// };
+template <class T, int D>
+struct Step2 {
+  static void step(XVM<T, D> &xvm, T dt, Vector<T, D> &gravity) {
+    Vector<T, D> dv = gravity * dt;
+    auto slice_pos = xvm.template slice<0>();
+    auto slice_vel = xvm.template slice<1>();
+    xvm.simd_par_each(KOKKOS_LAMBDA(typename XVM<T, D>::SimdHandle &handle) {
+      for (int i = 0; i < D; i++) {
+        slice_vel.access(handle.s, handle.a, i) += dv(i);
+        slice_pos.access(handle.s, handle.a, i) +=
+            slice_vel.access(handle.s, handle.a, i) * dt;
+      }
+    });
+  }
+};
 
 template <class T, int D>
 struct Step3 {

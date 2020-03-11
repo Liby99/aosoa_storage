@@ -2,7 +2,7 @@
 
 #include <Kokkos_Core.hpp>
 
-namespace storage_math {
+namespace math {
 
   template <class T, int D>
   struct Vector {};
@@ -16,11 +16,11 @@ namespace storage_math {
       T data[2];
     };
 
-    FnFlag Vector() : Vector(0) {}
+    KOKKOS_FUNCTION Vector() : Vector(0) {}
 
-    FnFlag Vector(T x) : Vector(x, x) {}
+    KOKKOS_FUNCTION Vector(T x) : Vector(x, x) {}
 
-    FnFlag Vector(T x, T y) : x(x), y(y) {}
+    KOKKOS_FUNCTION Vector(T x, T y) : x(x), y(y) {}
 
     KOKKOS_INLINE_FUNCTION T operator()(int i) const {
       return data[i];
@@ -81,11 +81,11 @@ namespace storage_math {
       T data[3];
     };
 
-    FnFlag Vector() : Vector(0) {}
+    KOKKOS_FUNCTION Vector() : Vector(0) {}
 
-    FnFlag Vector(T x) : Vector(x, x, x) {}
+    KOKKOS_FUNCTION Vector(T x) : Vector(x, x, x) {}
 
-    FnFlag Vector(T x, T y, T z) : x(x), y(y), z(z) {}
+    KOKKOS_FUNCTION Vector(T x, T y, T z) : x(x), y(y), z(z) {}
 
     KOKKOS_INLINE_FUNCTION T operator()(int i) const {
       return data[i];

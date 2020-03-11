@@ -34,8 +34,8 @@ namespace storage {
   };
 
   template <class T>
-  struct TypeTransform<storage_math::Vector<T, 2>> {
-    using From = storage_math::Vector<T, 2>;
+  struct TypeTransform<math::Vector<T, 2>> {
+    using From = math::Vector<T, 2>;
 
     using To = T[2];
 
@@ -63,8 +63,8 @@ namespace storage {
   };
 
   template <class T>
-  struct TypeTransform<storage_math::Vector<T, 3>> {
-    using From = storage_math::Vector<T, 3>;
+  struct TypeTransform<math::Vector<T, 3>> {
+    using From = math::Vector<T, 3>;
 
     using To = T[3];
 

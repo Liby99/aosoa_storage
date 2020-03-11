@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Kokkos_Core.hpp>
+
 namespace storage {
   struct DefaultConfig {
     using DeviceExecutionSpace = Kokkos::Serial;
