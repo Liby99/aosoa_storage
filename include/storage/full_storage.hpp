@@ -4,6 +4,7 @@
 #include "./range.hpp"
 #include "./slice_holder.hpp"
 #include "./handle.hpp"
+#include "./kernel_functor.hpp"
 #include <memory>
 
 namespace storage {
@@ -48,11 +49,14 @@ namespace storage {
       host_data(Cabana::create_mirror_view(Kokkos::HostSpace(), device_data)) {}
 
     void push() {
-      Cabana::deep_copy(host_data, device_data);
+      if (device_data.size() < host_data.size()) {
+        device_data.resize(host_data.size());
+      }
+      Cabana::deep_copy(device_data, host_data);
     }
 
     void pull() {
-      Cabana::deep_copy(device_data, host_data);
+      Cabana::deep_copy(host_data, device_data);
     }
 
     std::size_t size() {
@@ -91,6 +95,22 @@ namespace storage {
         callback(data, handle);
       }
       return Range{start, stored_length};
+    }
+
+    template <typename F>
+    void each(F kernel) {
+      SliceHolder<HostAoSoA, Types...> slice_holder(host_data);
+      for (int i = 0; i < stored_length; i++) {
+        LinearHandle<HostAoSoA, Types...> handle(slice_holder, i);
+        kernel(handle);
+      }
+    }
+
+    template <typename F>
+    void par_each(F kernel) {
+      LinearKernel<DeviceAoSoA, F, Types...> kernel_functor(device_data, kernel);
+      Kokkos::RangePolicy<DeviceExecutionSpace> linear_policy(0, stored_length);
+      Kokkos::parallel_for(linear_policy, kernel_functor, "par_each");
     }
   };
 }
