@@ -91,33 +91,33 @@ namespace storage_math {
       return data[i];
     }
 
-    KOKKOS_INLINE_FUNCTION Vector<T, 3> operator+(Vector<T, 3> other) const {
+    KOKKOS_INLINE_FUNCTION Vector<T, 3> operator+(const Vector<T, 3> &other) const {
       return Vector<T, 3>(x + other.x, y + other.y, z + other.z);
     }
 
-    KOKKOS_INLINE_FUNCTION Vector<T, 3> operator-(Vector<T, 3> other) const {
+    KOKKOS_INLINE_FUNCTION Vector<T, 3> operator-(const Vector<T, 3> &other) const {
       return Vector<T, 3>(x - other.x, y - other.y, z - other.z);
     }
 
-    KOKKOS_INLINE_FUNCTION Vector<T, 3> operator*(T other) const {
+    KOKKOS_INLINE_FUNCTION Vector<T, 3> operator*(const T other) const {
       return Vector<T, 3>(x * other, y * other, z * other);
     }
 
-    KOKKOS_INLINE_FUNCTION Vector<T, 3> operator/(T other) const {
+    KOKKOS_INLINE_FUNCTION Vector<T, 3> operator/(const T other) const {
       return Vector<T, 3>(x / other, y / other, z / other);
     }
 
-    KOKKOS_INLINE_FUNCTION T dot(Vector<T, 3> other) const {
+    KOKKOS_INLINE_FUNCTION T dot(const Vector<T, 3> &other) const {
       return x * other.x + y * other.y + z * other.z;
     }
 
-    KOKKOS_INLINE_FUNCTION void operator+=(Vector<T, 3> other) {
+    KOKKOS_INLINE_FUNCTION void operator+=(const Vector<T, 3> &other) {
       x += other.x;
       y += other.y;
       z += other.z;
     }
 
-    KOKKOS_INLINE_FUNCTION void operator-=(Vector<T, 3> other) {
+    KOKKOS_INLINE_FUNCTION void operator-=(const Vector<T, 3> &other) {
       x -= other.x;
       y -= other.y;
       z -= other.z;
@@ -136,8 +136,8 @@ namespace storage_math {
     }
 
     template <typename U>
-    KOKKOS_INLINE_FUNCTION Vector<U, 2> cast() const {
-      return Vector<U, 2>((U)x, (U)y);
+    KOKKOS_INLINE_FUNCTION Vector<U, 3> cast() const {
+      return Vector<U, 3>((U)x, (U)y, (U)z);
     }
   };
 

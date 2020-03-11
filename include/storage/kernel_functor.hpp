@@ -1,23 +1,23 @@
 #pragma once
 
-#include "./utils.hpp"
 #include "./handle.hpp"
+#include "./utils.hpp"
 
 namespace storage {
-  template <class AoSoA, typename... Types>
+  template <class AoSoA, class F, typename... Types>
   struct LinearKernel {
     using Handle = LinearHandle<AoSoA, Types...>;
 
-    const SliceHolder<AoSoA, Types...> &slice_holder;
+    SliceHolder<AoSoA, Types...> slice_holder;
 
-    const Fn<void(Handle &)> &kernel;
+    const F &kernel;
 
-    LinearKernel(const AoSoA &data, const Fn<void(Handle &)> &kernel)
-      : slice_holder(data), kernel(kernel) {}
+    LinearKernel(const AoSoA &data, const F &kernel)
+        : slice_holder(data), kernel(kernel) {}
 
-    KOKKOS_INLINE_FUNCTION void operator() (const int i) const {
+    KOKKOS_INLINE_FUNCTION void operator()(const int i) const {
       Handle handle(slice_holder, i);
       kernel(handle);
     }
   };
-}
+} // namespace storage

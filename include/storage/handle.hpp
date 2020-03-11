@@ -18,7 +18,7 @@ namespace storage {
     const int i;
 
     FnFlag LinearHandle(const SliceHolder<AoSoA, Types...> &slice_holder, const int i)
-      : slice_holder(slice_holder), i(i) {}
+        : slice_holder(slice_holder), i(i) {}
 
     template <int Index>
     KOKKOS_INLINE_FUNCTION TypeAt<Index> get() const {
@@ -26,8 +26,8 @@ namespace storage {
     }
 
     template <int Index>
-    KOKKOS_INLINE_FUNCTION void set(const TypeAt<Index> &component) const {
-      TypeTransform<TypeAt<Index>>::set(slice_holder.template get<Index>(), i, component);
+    KOKKOS_INLINE_FUNCTION void set(const TypeAt<Index> &c) const {
+      TypeTransform<TypeAt<Index>>::set(slice_holder.template get<Index>(), i, c);
     }
   };
-}
+} // namespace storage

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./type_transform.hpp"
 #include "./handle.hpp"
+#include "./type_transform.hpp"
 #include "./utils.hpp"
 #include <Cabana_Core.hpp>
 
@@ -13,6 +13,8 @@ namespace storage {
     using MemberTypes = Cabana::MemberTypes<typename TypeTransform<Types>::To...>;
 
     using AoSoA = Cabana::AoSoA<MemberTypes, Device, BinSize>;
+
+    using Tuple = Cabana::Tuple<MemberTypes>;
 
     template <int Index>
     using TypeAt = typename ExtractTypeAt<Index, Types...>::Type;

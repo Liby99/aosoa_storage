@@ -17,11 +17,9 @@ namespace storage {
 
   template <int Index, typename AoSoA, typename T, typename... Types>
   struct SliceHolderImpl<Index, AoSoA, T, Types...>
-      : public SliceHolderBase<Index, AoSoA>,
-        public SliceHolderImpl<Index + 1, AoSoA, Types...> {
+      : public SliceHolderBase<Index, AoSoA>, public SliceHolderImpl<Index + 1, AoSoA, Types...> {
     SliceHolderImpl(const AoSoA &data)
-        : SliceHolderBase<Index, AoSoA>(data),
-          SliceHolderImpl<Index + 1, AoSoA, Types...>(data) {}
+        : SliceHolderBase<Index, AoSoA>(data), SliceHolderImpl<Index + 1, AoSoA, Types...>(data) {}
   };
 
   template <typename AoSoA, typename... Types>
@@ -36,4 +34,4 @@ namespace storage {
       return SliceHolderBase<Index, AoSoA>::slice;
     }
   };
-}
+} // namespace storage
