@@ -1,7 +1,5 @@
 #pragma once
 
-namespace storage {
-  int sum(int a, int b) {
-    return a + b;
-  }
-} // namespace storage
+#include "./full_storage.hpp"
+#include "./partial_storage.hpp"
+#include "./storage.hpp"
