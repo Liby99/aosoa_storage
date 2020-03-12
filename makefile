@@ -19,7 +19,7 @@ ifeq ($(ENABLE_CUDA), On)
 CMAKE_CMD := cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) \
 									 -D CMAKE_CXX_COMPILER=$(CUDA_COMPILER) \
 									 -D STORAGE_ENABLE_CUDA=On \
-									 -D STORAGE_ENABLE_OPENMP=Off \
+									 -D STORAGE_ENABLE_OPENMP=$(ENABLE_OPENMP) \
 									 -D Kokkos_ARCH_$(CUDA_ARCH)=On \
 									 -D Kokkos_ENABLE_CUDA_LAMBDA=On \
 									 $(CURR_DIR)

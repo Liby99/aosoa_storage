@@ -25,13 +25,15 @@ void run() {
 
   xvm.fill_with_iter(positions, [](auto pos, typename XVM::HostHandle &handle) {
     handle.template set<0>(pos);
-    handle.template set<1>(Vector3f(0.0, 1.0, 0.0));
-    handle.template set<2>(0.01);
   });
+
+  xvm.template fill<1>(Vector3f(0.0, 1.0, 0.0));
+  xvm.template fill<2>(0.01);
 
   xvm.push();
 
-  for (int i = 0; i < 100; i++) {
+  for (int i = 0; i < 10000; i++) {
+    std::cout << "Frame " << i << "\r" << std::flush;
     xvm.par_each(KOKKOS_LAMBDA(typename XVM::DeviceHandle &handle) {
       auto x = handle.template get<0>();
       auto v = handle.template get<1>();

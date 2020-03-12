@@ -5,7 +5,6 @@
 #include "./slice_holder.hpp"
 #include "./handle.hpp"
 #include "./kernel_functor.hpp"
-#include <memory>
 
 namespace storage {
   template <class Config, typename... Types>
@@ -39,13 +38,13 @@ namespace storage {
 
     HostAoSoA host_data;
 
-    static const int DEFAULT_CAPACITY = 1024;
+    static const std::size_t DEFAULT_CAPACITY = 1024;
 
     FullStorage() : FullStorage(DEFAULT_CAPACITY) {}
 
     FullStorage(std::size_t capacity) :
       stored_length(0),
-      device_data("storage", capacity),
+      device_data("full_storage", capacity),
       host_data(Cabana::create_mirror_view(Kokkos::HostSpace(), device_data)) {}
 
     void push() {
@@ -59,8 +58,25 @@ namespace storage {
       Cabana::deep_copy(host_data, device_data);
     }
 
-    std::size_t size() {
+    std::size_t size() const {
       return stored_length;
+    }
+
+    void fill(const Types &... cs) {
+      auto tuple = ToCabanaTuple<Types...>::to_cabana(cs...);
+      auto kernel = KOKKOS_LAMBDA(int i) { host_data.setTuple(i, tuple); };
+      Kokkos::RangePolicy<HostExecutionSpace> linear_policy(0, stored_length);
+      Kokkos::parallel_for(linear_policy, kernel, "fill");
+    }
+
+    template <int Index>
+    void fill(const TypeAt<Index> &c) {
+      auto slice = Cabana::slice<Index>(host_data);
+      auto kernel = KOKKOS_LAMBDA(int i) {
+        TypeTransform<TypeAt<Index>>::set(slice, i, c);
+      };
+      Kokkos::RangePolicy<HostExecutionSpace> linear_policy(0, stored_length);
+      Kokkos::parallel_for(linear_policy, kernel, "fill");
     }
 
     Range fill(std::size_t amount, const Types &... cs) {
@@ -98,7 +114,7 @@ namespace storage {
     }
 
     template <typename F>
-    void each(F kernel) {
+    void each(F kernel) const {
       SliceHolder<HostAoSoA, Types...> slice_holder(host_data);
       for (int i = 0; i < stored_length; i++) {
         LinearHandle<HostAoSoA, Types...> handle(slice_holder, i);
