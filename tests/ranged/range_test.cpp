@@ -1,5 +1,6 @@
 #include <storage/prelude.hpp>
 #include <iostream>
+#include <assert.h>
 
 using namespace storage;
 

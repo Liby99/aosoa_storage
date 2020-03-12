@@ -36,56 +36,61 @@ namespace storage {
     }
   };
 
-  template <int StorageIndex, int FieldIndex, template <class> typename Extractor, typename S>
-  struct JoinedSliceHolderBaseImpl : public JoinedSliceHolderBaseImpl<StorageIndex, FieldIndex - 1, Extractor, S> {
-    using AoSoA = typename Extractor<S>::AoSoA;
-
+  template <int StorageIndex, int FieldIndex, typename AoSoA>
+  struct JoinedSliceHolderBaseImpl : public JoinedSliceHolderBaseImpl<StorageIndex, FieldIndex - 1, AoSoA> {
     using Slice = decltype(Cabana::slice<FieldIndex>(std::declval<AoSoA>()));
 
     Slice slice;
 
-    JoinedSliceHolderBaseImpl(const S &s)
-        : slice(Cabana::slice<FieldIndex>(Extractor<S>::get(s))),
-          JoinedSliceHolderBaseImpl<StorageIndex, FieldIndex - 1, Extractor, S>(s) {}
+    JoinedSliceHolderBaseImpl(const AoSoA &s)
+        : slice(Cabana::slice<FieldIndex>(s)),
+          JoinedSliceHolderBaseImpl<StorageIndex, FieldIndex - 1, AoSoA>(s) {}
   };
 
-  template <int StorageIndex, template <class> typename Extractor, typename S>
-  struct JoinedSliceHolderBaseImpl<StorageIndex, -1, Extractor, S> {
-    JoinedSliceHolderBaseImpl(const S &s) {}
+  template <int StorageIndex, typename AoSoA>
+  struct JoinedSliceHolderBaseImpl<StorageIndex, -1, AoSoA> {
+    JoinedSliceHolderBaseImpl(const AoSoA &s) {}
   };
 
-  template <int StorageIndex, template <class> typename Extractor, typename S>
-  struct JoinedSliceHolderBase : JoinedSliceHolderBaseImpl<StorageIndex, S::N - 1, Extractor, S> {
-    JoinedSliceHolderBase(const S &s) : JoinedSliceHolderBaseImpl<StorageIndex, S::N - 1, Extractor, S>(s) {}
+  template <int StorageIndex, template <class> typename Extractor, typename Joined, typename S>
+  struct JoinedSliceHolderBase :
+    public JoinedSliceHolderBaseImpl<StorageIndex, S::N - 1, typename Extractor<S>::AoSoA> {
+    using AoSoA = typename Extractor<S>::AoSoA;
+
+    JoinedSliceHolderBase(const Joined &j)
+        : JoinedSliceHolderBaseImpl<StorageIndex, S::N - 1, AoSoA>(Extractor<S>::get(j.template get<StorageIndex>())) {}
   };
 
-  template <int StorageIndex, template <class> typename Extractor, typename... Storages>
+  template <int StorageIndex, template <class> typename Extractor, typename Joined, typename... Storages>
   struct JoinedSliceHolderImpl {
-    JoinedSliceHolderImpl(const Storages &... ss) {}
+    JoinedSliceHolderImpl(const Joined &j) {}
   };
 
-  template <int StorageIndex, template <class> typename Extractor, typename S, typename... Storages>
-  struct JoinedSliceHolderImpl<StorageIndex, Extractor, S, Storages...>
-    : public JoinedSliceHolderBase<StorageIndex, Extractor, S>,
-      public JoinedSliceHolderImpl<StorageIndex + 1, Extractor, Storages...> {
-    JoinedSliceHolderImpl(const S &s, const Storages &... ss)
-        : JoinedSliceHolderBase<StorageIndex, Extractor, S>(s),
-          JoinedSliceHolderImpl<StorageIndex + 1, Extractor, Storages...>(ss...) {}
+  template <int StorageIndex, template <class> typename Extractor, typename Joined, typename S, typename... Storages>
+  struct JoinedSliceHolderImpl<StorageIndex, Extractor, Joined, S, Storages...>
+    : public JoinedSliceHolderBase<StorageIndex, Extractor, Joined, S>,
+      public JoinedSliceHolderImpl<StorageIndex + 1, Extractor, Joined, Storages...> {
+    JoinedSliceHolderImpl(const Joined &j)
+        : JoinedSliceHolderBase<StorageIndex, Extractor, Joined, S>(j),
+          JoinedSliceHolderImpl<StorageIndex + 1, Extractor, Joined, Storages...>(j) {}
   };
 
-  template <template <class> typename Extractor, typename... Storages>
-  struct JoinedSliceHolder : public JoinedSliceHolderImpl<0, Extractor, Storages...> {
-    JoinedSliceHolder(const Storages &... ss) : JoinedSliceHolderImpl<0, Extractor, Storages...>(ss...) {}
+  template <template <class> typename Extractor, typename Joined, typename... Storages>
+  struct JoinedSliceHolder : public JoinedSliceHolderImpl<0, Extractor, Joined, Storages...> {
+    JoinedSliceHolder(const Joined &j) : JoinedSliceHolderImpl<0, Extractor, Joined, Storages...>(j) {}
 
     template <int StorageIndex>
     using StorageAt = typename ExtractTypeAt<StorageIndex, Storages...>::Type;
 
+    template <int StorageIndex>
+    using AoSoAAt = typename Extractor<StorageAt<StorageIndex>>::AoSoA;
+
     template <int StorageIndex, int FieldIndex>
-    using SliceAt = typename JoinedSliceHolderBaseImpl<StorageIndex, FieldIndex, Extractor, StorageAt<StorageIndex>>::Slice;
+    using SliceAt = typename JoinedSliceHolderBaseImpl<StorageIndex, FieldIndex, AoSoAAt<StorageIndex>>::Slice;
 
     template <int StorageIndex, int FieldIndex>
     KOKKOS_INLINE_FUNCTION const SliceAt<StorageIndex, FieldIndex> &get() const {
-      return JoinedSliceHolderBaseImpl<StorageIndex, FieldIndex, Extractor, StorageAt<StorageIndex>>::slice;
+      return JoinedSliceHolderBaseImpl<StorageIndex, FieldIndex, AoSoAAt<StorageIndex>>::slice;
     }
   };
 
@@ -93,7 +98,7 @@ namespace storage {
   struct HostAoSoAExtractor {
     using AoSoA = typename S::HostAoSoA;
 
-    static AoSoA get(const S &s) {
+    static const AoSoA &get(const S &s) {
       return s.host_data;
     }
   };
@@ -102,7 +107,7 @@ namespace storage {
   struct DeviceAoSoAExtractor {
     using AoSoA = typename S::DeviceAoSoA;
 
-    static AoSoA get(const S &s) {
+    static const AoSoA &get(const S &s) {
       return s.device_data;
     }
   };

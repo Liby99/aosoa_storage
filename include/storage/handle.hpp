@@ -35,7 +35,7 @@ namespace storage {
   struct JoinedLinearHandle {
     using Base = JoinedStorageGroup<Storages...>;
 
-    using SliceHolder = JoinedSliceHolder<Extractor, Storages...>;
+    using SliceHolder = JoinedSliceHolder<Extractor, Base, Storages...>;
 
     using Offset = JoinedOffset<Base, Storages...>;
 
@@ -56,17 +56,16 @@ namespace storage {
 
     template <int StorageIndex, int FieldIndex>
     KOKKOS_INLINE_FUNCTION TypeAt<StorageIndex, FieldIndex> get() const {
-      return TypeTransform<TypeAt<StorageIndex, FieldIndex>>::get(
-        slice_holder.template get<StorageIndex, FieldIndex>(),
-        offset.template local_offset<StorageIndex>() + i);
+      auto slice = slice_holder.template get<StorageIndex, FieldIndex>();
+      auto off = offset.template local_offset<StorageIndex>();
+      return TypeTransform<TypeAt<StorageIndex, FieldIndex>>::get(slice, off + i);
     }
 
     template <int StorageIndex, int FieldIndex>
     KOKKOS_INLINE_FUNCTION void set(const TypeAt<StorageIndex, FieldIndex> &c) const {
-      TypeTransform<TypeAt<StorageIndex, FieldIndex>>::set(
-        slice_holder.template get<StorageIndex, FieldIndex>(),
-        offset.template local_offset<StorageIndex>() + i,
-        c);
+      auto slice = slice_holder.template get<StorageIndex, FieldIndex>();
+      auto off = offset.template local_offset<StorageIndex>();
+      TypeTransform<TypeAt<StorageIndex, FieldIndex>>::set(slice, off + i, c);
     }
   };
 } // namespace storage

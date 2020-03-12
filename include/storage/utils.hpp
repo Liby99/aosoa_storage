@@ -96,6 +96,8 @@ namespace storage {
     template <int Index>
     using StorageAt = typename ExtractTypeAt<Index, Storages...>::Type;
 
+    static const std::size_t N = sizeof...(Storages);
+
     JoinedStorageGroup(const Storages &... ss) : JoinedStorageImpl<0, Storages...>(ss...) {}
 
     Ranges ranges() const {
@@ -113,7 +115,9 @@ namespace storage {
     std::size_t local_offset;
 
     JoinedOffsetBase(const Range &global, const Joined &j)
-      : local_offset(j.template get<Index>().ranges().to_local(global.start)) {}
+      : local_offset(j.template get<Index>().ranges().to_local(global.start)) {
+      std::cout << "Storage " << Index << " has offset " << local_offset << std::endl;
+    }
   };
 
   template <std::size_t Index, typename Joined, typename... Storages>
@@ -138,7 +142,7 @@ namespace storage {
     JoinedOffset(const Range &global, const Joined &j) : JoinedOffsetImpl<0, Joined, Storages...>(global, j) {}
 
     template <int Index>
-    std::size_t local_offset() const {
+    KOKKOS_INLINE_FUNCTION std::size_t local_offset() const {
       return JoinedOffsetBase<Index, Joined, StorageAt<Index>>::local_offset;
     }
   };
