@@ -69,7 +69,8 @@ void run() {
   {
     auto slice_0 = Cabana::slice<0>(host_particles);
     for (int i = 0; i < 100; i++) {
-      std::cout << i << ": " << slice_0(i, 0) << ", " << slice_0(i, 1) << ", " << slice_0(i, 2) << std::endl;
+      std::cout << i << ": " << slice_0(i, 0) << ", " << slice_0(i, 1) << ", " << slice_0(i, 2)
+                << std::endl;
     }
   }
 }

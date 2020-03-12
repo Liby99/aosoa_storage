@@ -12,8 +12,7 @@ namespace storage {
 
     F kernel;
 
-    LinearKernel(const AoSoA &data, F kernel)
-        : slice_holder(data), kernel(kernel) {}
+    LinearKernel(const AoSoA &data, F kernel) : slice_holder(data), kernel(kernel) {}
 
     KOKKOS_INLINE_FUNCTION void operator()(const int i) const {
       Handle handle(slice_holder, i);

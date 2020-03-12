@@ -1,11 +1,11 @@
-#include <storage/prelude.hpp>
 #include <math/prelude.hpp>
+#include <storage/prelude.hpp>
 
 using namespace storage;
 using namespace math;
 
 using Particles = FullStorage<Config, Vector3f, Vector3f, float>; // x v m
-using Accelerations = FullStorage<Config, Vector3f>; // a
+using Accelerations = FullStorage<Config, Vector3f>;              // a
 
 void run() {
   Particles particles;

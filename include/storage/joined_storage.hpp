@@ -51,4 +51,4 @@ namespace storage {
       }
     }
   };
-}
+} // namespace storage

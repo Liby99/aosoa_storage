@@ -1,13 +1,13 @@
-#include <storage/prelude.hpp>
 #include <math/prelude.hpp>
+#include <storage/prelude.hpp>
 
 using namespace storage;
 using namespace math;
 
 using Particles = FullStorage<Config, Vector3f, Vector3f, float>; // a b c
-using Stresses = FullStorage<Config, Vector3f, Vector3f>; // d e
-using Attr1 = RangedStorage<Config, Vector3f, float>; // f g
-using Attr2 = RangedStorage<Config, float, int>; // h i
+using Stresses = FullStorage<Config, Vector3f, Vector3f>;         // d e
+using Attr1 = RangedStorage<Config, Vector3f, float>;             // f g
+using Attr2 = RangedStorage<Config, float, int>;                  // h i
 
 void run() {
   Particles particles;

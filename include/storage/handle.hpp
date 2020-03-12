@@ -54,7 +54,8 @@ namespace storage {
 
     const int i;
 
-    KOKKOS_FUNCTION JoinedLinearHandle(const SliceHolder &slice_holder, const Offset &offset, const int i)
+    KOKKOS_FUNCTION
+    JoinedLinearHandle(const SliceHolder &slice_holder, const Offset &offset, const int i)
         : slice_holder(slice_holder), offset(offset), i(i) {}
 
     template <int StorageIndex, int FieldIndex>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <math/prelude.hpp>
 #include "./iterator_range.hpp"
+#include <math/prelude.hpp>
 
 template <int D>
 struct GridIterator {};
@@ -23,8 +23,7 @@ struct GridIterator<2> {
   }
 
   static IteratorRange<GridIterator<2>> range(math::Vector<int, 2> size) {
-    return make_range(GridIterator<2>(size.x, size.y),
-                      GridIterator<2>(size.x, size.y, true));
+    return make_range(GridIterator<2>(size.x, size.y), GridIterator<2>(size.x, size.y, true));
   }
 
   math::Vector<int, 2> operator*() {
@@ -51,8 +50,7 @@ struct GridIterator<3> {
 
   GridIterator(int x, int y, int z) : x(x), y(y), z(z), i(0), j(0), k(0) {}
 
-  GridIterator(int x, int y, int z, bool _)
-      : x(x), y(y), z(z), i(0), j(0), k(z) {}
+  GridIterator(int x, int y, int z, bool _) : x(x), y(y), z(z), i(0), j(0), k(z) {}
 
   std::size_t size() const {
     return x * y * z;

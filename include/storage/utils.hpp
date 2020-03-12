@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./type_transform.hpp"
 #include "./range.hpp"
+#include "./type_transform.hpp"
 
 namespace storage {
   template <int Index, typename T, typename... Types>
@@ -115,7 +115,7 @@ namespace storage {
     std::size_t local_offset;
 
     JoinedOffsetBase(const Range &global, const Joined &j)
-      : local_offset(j.template get<Index>().ranges().to_local(global.start)) {}
+        : local_offset(j.template get<Index>().ranges().to_local(global.start)) {}
   };
 
   template <std::size_t Index, typename Joined, typename... Storages>
@@ -137,7 +137,8 @@ namespace storage {
     template <int Index>
     using StorageAt = typename ExtractTypeAt<Index, Storages...>::Type;
 
-    JoinedOffset(const Range &global, const Joined &j) : JoinedOffsetImpl<0, Joined, Storages...>(global, j) {}
+    JoinedOffset(const Range &global, const Joined &j)
+        : JoinedOffsetImpl<0, Joined, Storages...>(global, j) {}
 
     template <int Index>
     KOKKOS_INLINE_FUNCTION std::size_t local_offset() const {

@@ -1,11 +1,11 @@
-#include <storage/prelude.hpp>
 #include <math/prelude.hpp>
+#include <storage/prelude.hpp>
 
 using namespace storage;
 using namespace math;
 
 using Particles = FullStorage<Config, Vector3f, Vector3f, float>; // x v m
-using Accelerations = FullStorage<Config, Vector3f>; // a
+using Accelerations = FullStorage<Config, Vector3f>;              // a
 
 void run() {
   Particles particles;
@@ -21,7 +21,7 @@ void run() {
 
   auto device_slice_x = Cabana::slice<0>(particles.device_data);
 
-  particles.par_each(KOKKOS_LAMBDA(typename Particles::DeviceHandle &handle) {
+  particles.par_each(KOKKOS_LAMBDA(typename Particles::DeviceHandle & handle) {
     auto x = handle.template get<0>();
     auto v = handle.template get<1>();
     x.y += 1000.0;
@@ -49,9 +49,9 @@ void run() {
     auto device_slice_x = Cabana::slice<0>(particles.device_data);
     auto device_slice_v = Cabana::slice<1>(particles.device_data);
 
-    particles.join(accelerations).par_each(KOKKOS_LAMBDA(typename Joined::DeviceHandle &handle) {
-      // auto x = Vector3f(device_slice_x(handle.i, 0), device_slice_x(handle.i, 1), device_slice_x(handle.i, 2));
-      // x.y += 10.0;
+    particles.join(accelerations).par_each(KOKKOS_LAMBDA(typename Joined::DeviceHandle & handle) {
+      // auto x = Vector3f(device_slice_x(handle.i, 0), device_slice_x(handle.i, 1),
+      // device_slice_x(handle.i, 2)); x.y += 10.0;
       device_slice_x(handle.i, 1) += 10.0;
       // device_slice_x(handle.i, 0) = x.x;
       // device_slice_x(handle.i, 1) = x.y;

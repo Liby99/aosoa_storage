@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./storage.hpp"
 #include "./range.hpp"
+#include "./storage.hpp"
 
 namespace storage {
   template <class Config, typename... Types>
@@ -43,7 +43,9 @@ namespace storage {
       }
 
       auto tuple = ToCabanaTuple<Types...>::to_cabana(cs...);
-      auto kernel = KOKKOS_LAMBDA(int i) { this->host_data.setTuple(i, tuple); };
+      auto kernel = KOKKOS_LAMBDA(int i) {
+        this->host_data.setTuple(i, tuple);
+      };
       Kokkos::RangePolicy<HostExecutionSpace> linear_policy(start, this->stored_length);
       Kokkos::parallel_for(linear_policy, kernel, "fill");
 
@@ -76,4 +78,4 @@ namespace storage {
       this->ranges_map.globals[0].amount = this->stored_length;
     }
   };
-}
+} // namespace storage

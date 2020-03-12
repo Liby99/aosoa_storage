@@ -1,11 +1,11 @@
 #pragma once
 
-#include "./utils.hpp"
-#include "./slice_holder.hpp"
 #include "./handle.hpp"
+#include "./joined_storage.hpp"
 #include "./kernel_functor.hpp"
 #include "./range.hpp"
-#include "./joined_storage.hpp"
+#include "./slice_holder.hpp"
+#include "./utils.hpp"
 
 namespace storage {
   template <class Config, typename... Types>
@@ -20,11 +20,12 @@ namespace storage {
 
     using Device = Kokkos::Device<DeviceExecutionSpace, DeviceMemorySpace>;
 
-    using Fields = Cabana::MemberTypes<typename TypeTransform<Types>::To ...>;
+    using Fields = Cabana::MemberTypes<typename TypeTransform<Types>::To...>;
 
     using DeviceAoSoA = Cabana::AoSoA<Fields, Device>;
 
-    using HostAoSoA = decltype(Cabana::create_mirror_view(Kokkos::HostSpace(), std::declval<DeviceAoSoA>()));
+    using HostAoSoA =
+        decltype(Cabana::create_mirror_view(Kokkos::HostSpace(), std::declval<DeviceAoSoA>()));
 
     using Tuple = Cabana::Tuple<Fields>;
 
@@ -49,10 +50,9 @@ namespace storage {
 
     Storage() : Storage(DEFAULT_CAPACITY) {}
 
-    Storage(std::size_t capacity) :
-      stored_length(0),
-      device_data("full_storage", capacity),
-      host_data(Cabana::create_mirror_view(Kokkos::HostSpace(), device_data)) {}
+    Storage(std::size_t capacity)
+        : stored_length(0), device_data("full_storage", capacity),
+          host_data(Cabana::create_mirror_view(Kokkos::HostSpace(), device_data)) {}
 
     void push() {
       if (device_data.size() < host_data.size()) {
@@ -75,7 +75,9 @@ namespace storage {
 
     void fill(const Types &... cs) {
       auto tuple = ToCabanaTuple<Types...>::to_cabana(cs...);
-      auto kernel = KOKKOS_LAMBDA(int i) { host_data.setTuple(i, tuple); };
+      auto kernel = KOKKOS_LAMBDA(int i) {
+        host_data.setTuple(i, tuple);
+      };
       Kokkos::RangePolicy<HostExecutionSpace> linear_policy(0, stored_length);
       Kokkos::parallel_for(linear_policy, kernel, "fill");
     }
@@ -111,4 +113,4 @@ namespace storage {
       return JoinedStorage<Config, Self, Storages...>(*this, storages...);
     }
   };
-}
+} // namespace storage

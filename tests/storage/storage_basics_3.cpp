@@ -1,8 +1,8 @@
-#include <vector>
-#include <cstdlib>
-#include <storage/prelude.hpp>
-#include <math/prelude.hpp>
 #include "../common/grid_iterator.hpp"
+#include <cstdlib>
+#include <math/prelude.hpp>
+#include <storage/prelude.hpp>
+#include <vector>
 
 using namespace storage;
 using namespace math;
@@ -22,9 +22,8 @@ void run() {
     positions.push_back(Vector3f(random<float>(), random<float>(), random<float>()));
   }
 
-  xvm.fill_iter(positions, [](auto pos, typename XVM::HostHandle &handle) {
-    handle.template set<0>(pos);
-  });
+  xvm.fill_iter(positions,
+                [](auto pos, typename XVM::HostHandle &handle) { handle.template set<0>(pos); });
 
   xvm.template fill<1>(Vector3f(0.0, 1.0, 0.0));
   xvm.template fill<2>(0.01);
@@ -33,7 +32,7 @@ void run() {
 
   for (int i = 0; i < 10000; i++) {
     std::cout << "Frame " << i << "\r" << std::flush;
-    xvm.par_each(KOKKOS_LAMBDA(typename XVM::DeviceHandle &handle) {
+    xvm.par_each(KOKKOS_LAMBDA(typename XVM::DeviceHandle & handle) {
       auto x = handle.template get<0>();
       auto v = handle.template get<1>();
       handle.template set<0>(x + v);

@@ -33,4 +33,4 @@ namespace storage {
     using HostExecutionSpace = Kokkos::Serial;
 #endif // STORAGE_ENABLED_OPENMP
   };
-}
+} // namespace storage

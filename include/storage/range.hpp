@@ -4,8 +4,7 @@ namespace storage {
   struct Range {
     std::size_t start, amount;
 
-    Range(std::size_t start, std::size_t amount)
-        : start(start), amount(amount) {}
+    Range(std::size_t start, std::size_t amount) : start(start), amount(amount) {}
 
     Range() : Range(0, 0) {}
 
@@ -13,7 +12,7 @@ namespace storage {
       return end() > other.start && start < other.end();
     }
 
-    inline bool operator<= (const Range &other) const {
+    inline bool operator<=(const Range &other) const {
       return end() <= other.end();
     }
 
@@ -56,11 +55,11 @@ namespace storage {
 
     Ranges(bool is_infinity) : is_infinity(is_infinity) {}
 
-    inline Range &operator[] (std::size_t i) {
+    inline Range &operator[](std::size_t i) {
       return ranges[i];
     }
 
-    inline const Range &operator[] (std::size_t i) const {
+    inline const Range &operator[](std::size_t i) const {
       return ranges[i];
     }
 
@@ -91,7 +90,8 @@ namespace storage {
 
     bool contains(std::size_t i) const {
       for (auto range : ranges) {
-        if (range.contains(i)) return true;
+        if (range.contains(i))
+          return true;
       }
       return false;
     }
@@ -168,7 +168,7 @@ namespace storage {
           return locals[i] + global - globals.ranges[i].start;
         }
       }
-      return (std::size_t) -1;
+      return (std::size_t)-1;
     }
 
     std::string to_string() const {
@@ -183,4 +183,4 @@ namespace storage {
       return result;
     }
   };
-}
+} // namespace storage

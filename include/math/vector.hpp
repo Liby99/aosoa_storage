@@ -141,4 +141,4 @@ namespace math {
     }
   };
 
-} // namespace storage_math
+} // namespace math
