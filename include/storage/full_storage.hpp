@@ -18,6 +18,9 @@ namespace storage {
 
     using DeviceHandle = typename Super::DeviceHandle;
 
+    template <int Index>
+    using TypeAt = typename Super::template TypeAt<Index>;
+
     FullStorage() : Super() {
       this->ranges_map.add(0, 0, 0);
     }
@@ -27,7 +30,7 @@ namespace storage {
     }
 
     template <int Index>
-    inline void fill(const typename Super::template TypeAt<Index> &c) {
+    inline void fill(const TypeAt<Index> &c) {
       Super::template fill<Index>(c);
     }
 

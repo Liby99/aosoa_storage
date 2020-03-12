@@ -18,12 +18,15 @@ namespace storage {
 
     using DeviceHandle = typename Super::DeviceHandle;
 
+    template <int Index>
+    using TypeAt = typename Super::template TypeAt<Index>;
+
     RangedStorage() : Super() {}
 
     RangedStorage(std::size_t capacity) : Super(capacity) {}
 
     template <int Index>
-    inline void fill(const typename Super::template TypeAt<Index> &c) {
+    inline void fill(const TypeAt<Index> &c) {
       Super::template fill<Index>(c);
     }
 

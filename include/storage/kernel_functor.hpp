@@ -10,9 +10,9 @@ namespace storage {
 
     SliceHolder<AoSoA, Types...> slice_holder;
 
-    F &kernel;
+    F kernel;
 
-    LinearKernel(const AoSoA &data, F &kernel)
+    LinearKernel(const AoSoA &data, F kernel)
         : slice_holder(data), kernel(kernel) {}
 
     KOKKOS_INLINE_FUNCTION void operator()(const int i) const {
@@ -31,14 +31,14 @@ namespace storage {
 
     using Offset = JoinedOffset<Base, Storages...>;
 
-    const SliceHolder &slice_holder;
+    SliceHolder slice_holder;
 
     const Offset &offset;
 
-    F &kernel;
+    F kernel;
 
-    JoinedLinearKernel(const SliceHolder &slice_holder, const Offset &offset, F &kernel)
-        : slice_holder(slice_holder), offset(offset), kernel(kernel) {}
+    JoinedLinearKernel(const Base &base, const Offset &offset, F kernel)
+        : slice_holder(base), offset(offset), kernel(kernel) {}
 
     KOKKOS_INLINE_FUNCTION void operator()(const int i) const {
       Handle handle(slice_holder, offset, i);

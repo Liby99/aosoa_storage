@@ -6,7 +6,9 @@
 namespace storage {
   template <int Index, typename AoSoA>
   struct SliceHolderBase {
-    decltype(Cabana::slice<Index>(std::declval<AoSoA>())) slice;
+    using Slice = decltype(Cabana::slice<Index>(std::declval<AoSoA>()));
+
+    Slice slice;
 
     SliceHolderBase(const AoSoA &data) : slice(Cabana::slice<Index>(data)) {}
   };
@@ -98,7 +100,7 @@ namespace storage {
   struct HostAoSoAExtractor {
     using AoSoA = typename S::HostAoSoA;
 
-    static const AoSoA &get(const S &s) {
+    static inline const AoSoA &get(const S &s) {
       return s.host_data;
     }
   };
@@ -107,7 +109,7 @@ namespace storage {
   struct DeviceAoSoAExtractor {
     using AoSoA = typename S::DeviceAoSoA;
 
-    static const AoSoA &get(const S &s) {
+    static inline const AoSoA &get(const S &s) {
       return s.device_data;
     }
   };

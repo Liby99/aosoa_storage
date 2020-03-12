@@ -45,6 +45,9 @@ namespace storage {
     template <int StorageIndex, int FieldIndex>
     using TypeAt = typename StorageAt<StorageIndex>::template TypeAt<FieldIndex>;
 
+    template <int StorageIndex, int FieldIndex>
+    using SliceAt = typename SliceHolder::template SliceAt<StorageIndex, FieldIndex>;
+
     const SliceHolder &slice_holder;
 
     const Offset &offset;

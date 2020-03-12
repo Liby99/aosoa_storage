@@ -115,9 +115,7 @@ namespace storage {
     std::size_t local_offset;
 
     JoinedOffsetBase(const Range &global, const Joined &j)
-      : local_offset(j.template get<Index>().ranges().to_local(global.start)) {
-      std::cout << "Storage " << Index << " has offset " << local_offset << std::endl;
-    }
+      : local_offset(j.template get<Index>().ranges().to_local(global.start)) {}
   };
 
   template <std::size_t Index, typename Joined, typename... Storages>

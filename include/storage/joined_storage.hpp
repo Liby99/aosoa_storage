@@ -26,15 +26,11 @@ namespace storage {
 
     JoinedStorage(const Storages &... storages) : base(storages...) {}
 
-    Ranges ranges() const {
-      return base.ranges();
-    }
-
     template <typename F>
-    void each(F kernel) {
+    void each(F kernel) const {
       HostSliceHolder host_slice_holder(base);
-      auto global_ranges = ranges();
-      for (auto &range : global_ranges) {
+      Ranges global_ranges = base.ranges();
+      for (const Range &range : global_ranges) {
         Offset offset(range, base);
         for (int i = 0; i < range.amount; i++) {
           HostHandle handle(host_slice_holder, offset, i);
@@ -44,12 +40,12 @@ namespace storage {
     }
 
     template <typename F>
-    void par_each(F kernel) {
-      DeviceSliceHolder device_slice_holder(base);
-      auto global_ranges = ranges();
-      for (auto &range : global_ranges) {
+    void par_each(F kernel) const {
+      using KernelFunctor = JoinedLinearKernel<DeviceAoSoAExtractor, F, Storages...>;
+      Ranges global_ranges = base.ranges();
+      for (const Range &range : global_ranges) {
         Offset offset(range, base);
-        JoinedLinearKernel<DeviceAoSoAExtractor, F, Storages...> kernel_functor(device_slice_holder, offset, kernel);
+        KernelFunctor kernel_functor(base, offset, kernel);
         Kokkos::RangePolicy<DeviceExecutionSpace> linear_policy(0, range.amount);
         Kokkos::parallel_for(linear_policy, kernel_functor, "par_each");
       }

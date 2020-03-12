@@ -10,7 +10,7 @@ using Attr1 = RangedStorage<Config, Vector3f, float>;
 
 using Attr2 = RangedStorage<Config, float, int>;
 
-int main() {
+void run() {
   XVM xvm;
   Attr1 attr1;
   Attr2 attr2;
@@ -32,4 +32,10 @@ int main() {
   xvm.template fill<2>(0.01);
 
   attr2.fill(r2, 3.0, 100);
+}
+
+int main() {
+  Kokkos::initialize();
+  run();
+  Kokkos::finalize();
 }
