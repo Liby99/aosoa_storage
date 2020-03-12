@@ -20,9 +20,6 @@ void run() {
   for (int i = 0; i < 10000; i++) {
     std::cout << "Frame " << i << "\r" << std::flush;
     using Joined = decltype(particles.join(accelerations));
-
-    auto slice_0 = Cabana::slice<0>(particles.device_data);
-    auto slice_1 = Cabana::slice<1>(particles.device_data);
     particles.join(accelerations).par_each(KOKKOS_LAMBDA(typename Joined::DeviceHandle & handle) {
       auto x = handle.template get<0, 0>();
       auto v = handle.template get<0, 1>();
