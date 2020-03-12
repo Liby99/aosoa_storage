@@ -1,51 +1,52 @@
 #pragma once
 
 #include "./range.hpp"
+#include "./utils.hpp"
 
 namespace storage {
-  template <std::size_t Index, typename S>
-  struct JoinedStorageBase {
-    const S &storage;
-
-    JoinedStorageBase(const S &storage) : storage(storage) {}
-  };
-
-  template <std::size_t Index, typename... Storages>
-  struct JoinedStorageImpl {
-    JoinedStorageImpl(const Storages &... ss) {}
-
-    Ranges ranges() const {
-      return Ranges(true); // Infinity
-    }
-  };
-
-  template <std::size_t Index, typename S, typename... Storages>
-  struct JoinedStorageImpl<Index, S, Storages...>
-      : public JoinedStorageBase<Index, S>, public JoinedStorageImpl<Index + S::N, Storages...> {
-    JoinedStorageImpl(const S &s, const Storages &... ss)
-        : JoinedStorageBase<Index, S>(s), JoinedStorageImpl<Index + S::N, Storages...>(ss...) {}
-
-    Ranges ranges() const {
-      auto hd = JoinedStorageBase<Index, S>::storage.ranges().globals;
-      auto rs = JoinedStorageImpl<Index + S::N, Storages...>::ranges();
-      return hd.intersect(rs);
-    }
-  };
-
   template <typename Config, typename... Storages>
   struct JoinedStorage {
-    JoinedStorageImpl<0, Storages...> impl;
+    using Base = JoinedStorageGroup<Storages...>;
 
-    JoinedStorage(const Storages &... storages) : impl(storages...) {}
+    using HostSliceHolder = JoinedSliceHolder<HostAoSoAExtractor, Storages...>;
+
+    using DeviceSliceHolder = JoinedSliceHolder<DeviceAoSoAExtractor, Storages...>;
+
+    using Offset = JoinedOffset<Base, Storages...>;
+
+    Base base;
+
+    HostSliceHolder host_slice_holder;
+
+    DeviceSliceHolder device_slice_holder;
+
+    JoinedStorage(const Storages &... storages)
+        : base(storages...),
+          host_slice_holder(storages...),
+          device_slice_holder(storages...) {}
 
     Ranges ranges() const {
-      return impl.ranges();
+      return base.ranges();
     }
 
     template <typename F>
-    void each(F kernel) {}
+    void each(F kernel) {
+      auto global_ranges = ranges();
+      for (auto &range : global_ranges) {
+        Offset offset(range, base);
+        for (int i = 0; i < range.amount; i++) {
+
+        }
+      }
+    }
 
     template <typename F>
-    void par_each(F kernel) {}
+    void par_each(F kernel) {
+      auto global_ranges = ranges();
+      for (auto &range : global_ranges) {
+        Offset offset(range, base);
+
+      }
+    }
   };
 }

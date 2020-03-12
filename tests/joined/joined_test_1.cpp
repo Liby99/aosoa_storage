@@ -33,6 +33,8 @@ void run() {
 
   auto j3 = particles.join(attr2);
   std::cout << "j3 ranges: " << j3.ranges().to_string() << std::endl;
+
+  j1.each(3);
 }
 
 int main() {

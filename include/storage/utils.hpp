@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./type_transform.hpp"
+#include "./range.hpp"
 
 namespace storage {
   template <int Index, typename T, typename... Types>
@@ -31,6 +32,7 @@ namespace storage {
   template <class SliceHolder, typename... Types>
   struct Updator : public UpdatorImpl<0, SliceHolder, Types...> {};
 
+  // TODO: Change the name of these
   template <int Index, typename... Types>
   struct ToCabanaTupleImpl {
     template <typename Tuple>
@@ -57,6 +59,87 @@ namespace storage {
       Tuple target;
       ToCabanaTupleImpl<0, Types...>::to_cabana_tuple(target, cs...);
       return target;
+    }
+  };
+
+  template <std::size_t Index, typename S>
+  struct JoinedStorageBase {
+    const S &storage;
+
+    JoinedStorageBase(const S &storage) : storage(storage) {}
+  };
+
+  template <std::size_t Index, typename... Storages>
+  struct JoinedStorageImpl {
+    JoinedStorageImpl(const Storages &... ss) {}
+
+    Ranges ranges() const {
+      return Ranges(true); // Infinity
+    }
+  };
+
+  template <std::size_t Index, typename S, typename... Storages>
+  struct JoinedStorageImpl<Index, S, Storages...>
+      : public JoinedStorageBase<Index, S>, public JoinedStorageImpl<Index + 1, Storages...> {
+    JoinedStorageImpl(const S &s, const Storages &... ss)
+        : JoinedStorageBase<Index, S>(s), JoinedStorageImpl<Index + 1, Storages...>(ss...) {}
+
+    Ranges ranges() const {
+      auto hd = JoinedStorageBase<Index, S>::storage.ranges().globals;
+      auto rs = JoinedStorageImpl<Index + 1, Storages...>::ranges();
+      return hd.intersect(rs);
+    }
+  };
+
+  template <typename... Storages>
+  struct JoinedStorageGroup : public JoinedStorageImpl<0, Storages...> {
+    template <int Index>
+    using StorageAt = typename ExtractTypeAt<Index, Storages...>::Type;
+
+    JoinedStorageGroup(const Storages &... ss) : JoinedStorageImpl<0, Storages...>(ss...) {}
+
+    Ranges ranges() const {
+      return JoinedStorageImpl<0, Storages...>::ranges();
+    }
+
+    template <int Index>
+    const StorageAt<Index> &get() const {
+      return JoinedStorageBase<Index, StorageAt<Index>>::storage;
+    }
+  };
+
+  template <std::size_t Index, typename Joined, typename S>
+  struct JoinedOffsetBase {
+    std::size_t local_offset;
+
+    JoinedOffsetBase(const Range &global, const Joined &j)
+      : local_offset(j.template get<Index>().ranges().to_local(global.start)) {}
+  };
+
+  template <std::size_t Index, typename Joined, typename... Storages>
+  struct JoinedOffsetImpl {
+    JoinedOffsetImpl(const Range &global, const Joined &j) {}
+  };
+
+  template <std::size_t Index, typename Joined, typename S, typename... Storages>
+  struct JoinedOffsetImpl<Index, Joined, S, Storages...>
+      : public JoinedOffsetBase<Index, Joined, S>,
+        public JoinedOffsetImpl<Index + 1, Joined, Storages...> {
+    JoinedOffsetImpl(const Range &global, const Joined &j)
+        : JoinedOffsetBase<Index, Joined, S>(global, j),
+          JoinedOffsetImpl<Index + 1, Joined, Storages...>(global, j) {}
+  };
+
+  template <typename Joined, typename... Storages>
+  struct JoinedOffset : public JoinedOffsetImpl<0, Joined, Storages...> {
+    template <int Index>
+    using StorageAt = typename ExtractTypeAt<Index, Storages...>::Type;
+
+    JoinedOffset(const Range &global, const Joined &j) : JoinedOffsetImpl<0, Joined, Storages...>(global, j) {}
+
+    template <int Index>
+    std::size_t local_offset() const {
+      return JoinedOffsetBase<Index, Joined, StorageAt<Index>>::local_offset;
     }
   };
 } // namespace storage
