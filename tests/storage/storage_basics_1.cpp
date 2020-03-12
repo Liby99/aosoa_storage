@@ -24,30 +24,7 @@ void run() {
   assert(r2.start == 5);
   assert(r2.amount == 5);
 
-  // for (int i = 0; i < xvm.size(); i++) {
-  //   auto x = xvm.template get<0>(i);
-  //   std::cout << i << ": " << x.x << " " << x.y << " " << x.z << std::endl;
-  // }
-
   xvm.push();
-
-  // std::cout << "hahahah" << std::endl;
-
-  // xvm.par_each(KOKKOS_LAMBDA(const XVM::Handle &handle) {
-  //   Vector3f x = handle.template get<0>();
-  //   Vector3f v = handle.template get<1>();
-  //   x += v;
-  //   handle.template set<0>(x);
-  // });
-
-  // std::cout << "hahahah" << std::endl;
-
-  // xvm.pull();
-
-  // for (int i = 0; i < xvm.size; i++) {
-  //   auto x = xvm.template get<0>(i);
-  //   std::cout << i << ": " << x.x << " " << x.y << " " << x.z << std::endl;
-  // }
 }
 
 int main() {
