@@ -9,16 +9,13 @@ namespace storage {
     }
   };
 
-  // struct Ranges {
-  //   std::vector<Range> ranges;
+  struct Ranges {
+    std::vector<Range> ranges;
 
-  //   void add(const Range &range) {
-  //     Range &last_range = ranges[ranges.size() - 1];
-  //     if (last_range.end() == range.start) {
-  //       last_range.
-  //     }
-  //   }
-  // };
+    void add(const Range &range) {
+
+    }
+  };
 
   // struct Ranges {
   //   std::vector<std::tuple<std::size_t, Range>> ranges;

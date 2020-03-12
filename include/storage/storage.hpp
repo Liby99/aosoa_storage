@@ -1,7 +1,6 @@
 #pragma once
 
 #include "./utils.hpp"
-#include "./range.hpp"
 #include "./slice_holder.hpp"
 #include "./handle.hpp"
 #include "./kernel_functor.hpp"

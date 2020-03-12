@@ -2,8 +2,6 @@
 
 #include "./storage.hpp"
 #include "./range.hpp"
-#include "./handle.hpp"
-#include "./kernel_functor.hpp"
 
 namespace storage {
   template <class Config, typename... Types>
@@ -19,6 +17,8 @@ namespace storage {
     using HostHandle = typename Super::HostHandle;
 
     using DeviceHandle = typename Super::DeviceHandle;
+
+    static const bool is_full_storage = true;
 
     FullStorage() : Super() {}
 

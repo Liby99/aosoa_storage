@@ -1,115 +1,47 @@
-// #pragma once
+#pragma once
 
-// #include "./utils.hpp"
-// #include "./range.hpp"
-// #include "./slice_holder.hpp"
-// #include "./handle.hpp"
-// #include "./kernel_functor.hpp"
+#include "./storage.hpp"
+#include "./range.hpp"
 
-// namespace storage {
-//   template <class Config, typename... Types>
-//   struct RangedStorage {
-//     using DeviceExecutionSpace = typename Config::DeviceExecutionSpace;
+namespace storage {
+  template <class Config, typename... Types>
+  struct RangedStorage : public Storage<Config, Types...> {
+    using Super = Storage<Config, Types...>;
 
-//     using HostExecutionSpace = typename Config::HostExecutionSpace;
+    using HostExecutionSpace = typename Super::HostExecutionSpace;
 
-//     using DeviceMemorySpace = typename Config::DeviceMemorySpace;
+    using HostAoSoA = typename Super::HostAoSoA;
 
-//     using Device = Kokkos::Device<DeviceExecutionSpace, DeviceMemorySpace>;
+    using DeviceAoSoA = typename Super::DeviceAoSoA;
 
-//     using Fields = Cabana::MemberTypes<typename TypeTransform<Types>::To ...>;
+    using HostHandle = typename Super::HostHandle;
 
-//     using DeviceAoSoA = Cabana::AoSoA<Fields, Device>;
+    using DeviceHandle = typename Super::DeviceHandle;
 
-//     using HostAoSoA = decltype(Cabana::create_mirror_view(Kokkos::HostSpace(), std::declval<DeviceAoSoA>()));
+    Ranges ranges;
 
-//     using Tuple = Cabana::Tuple<Fields>;
+    RangedStorage() : Super() {}
 
-//     using HostHandle = LinearHandle<HostAoSoA, Types...>;
+    RangedStorage(std::size_t capacity) : Super(capacity) {}
 
-//     using DeviceHandle = LinearHandle<DeviceAoSoA, Types...>;
+    template <int Index>
+    inline void fill(const typename Super::template TypeAt<Index> &c) {
+      Super::template fill<Index>(c);
+    }
 
-//     template <int Index>
-//     using TypeAt = typename ExtractTypeAt<Index, Types...>::Type;
+    void fill(const Range &range, const Types &... cs) {
+      std::size_t start = this->stored_length;
+      // ranges.add(start, range); // TODO
 
-//     std::size_t stored_length;
+      this->stored_length += range.amount;
+      if (this->stored_length > this->host_data.size()) {
+        this->host_data.resize(this->stored_length);
+      }
 
-//     DeviceAoSoA device_data;
-
-//     HostAoSoA host_data;
-
-//     Ranges ranges;
-
-//     static const std::size_t DEFAULT_CAPACITY = 1024;
-
-//     RangedStorage() : RangedStorage(DEFAULT_CAPACITY) {}
-
-//     RangedStorage(std::size_t capacity) :
-//       stored_length(0),
-//       device_data("partial_storage", capacity),
-//       host_data(Cabana::create_mirror_view(Kokkos::HostSpace(), device_data)) {}
-
-//     void push() {
-//       if (device_data.size() < host_data.size()) {
-//         device_data.resize(host_data.size());
-//       }
-//       Cabana::deep_copy(device_data, host_data);
-//     }
-
-//     void pull() {
-//       Cabana::deep_copy(host_data, device_data);
-//     }
-
-//     std::size_t size() const {
-//       return stored_length;
-//     }
-
-//     void fill(const Types &... cs) {
-//       auto tuple = ToCabanaTuple<Types...>::to_cabana(cs...);
-//       auto kernel = KOKKOS_LAMBDA(int i) { host_data.setTuple(i, tuple); };
-//       Kokkos::RangePolicy<HostExecutionSpace> linear_policy(0, stored_length);
-//       Kokkos::parallel_for(linear_policy, kernel, "fill");
-//     }
-
-//     template <int Index>
-//     void fill(const TypeAt<Index> &c) {
-//       auto slice = Cabana::slice<Index>(host_data);
-//       auto kernel = KOKKOS_LAMBDA(int i) {
-//         TypeTransform<TypeAt<Index>>::set(slice, i, c);
-//       };
-//       Kokkos::RangePolicy<HostExecutionSpace> linear_policy(0, stored_length);
-//       Kokkos::parallel_for(linear_policy, kernel, "fill");
-//     }
-
-//     void fill(const Range &range, const Types &... cs) {
-//       std::size_t start = stored_length;
-//       ranges.add(start, range);
-
-//       stored_length += range.amount;
-//       if (stored_length > host_data.size()) {
-//         host_data.resize(stored_length);
-//       }
-
-//       auto tuple = ToCabanaTuple<Types...>::to_cabana(cs...);
-//       auto kernel = KOKKOS_LAMBDA(int i) { host_data.setTuple(i, tuple); };
-//       Kokkos::RangePolicy<HostExecutionSpace> linear_policy(start, stored_length);
-//       Kokkos::parallel_for(linear_policy, kernel, "fill");
-//     }
-
-//     template <typename F>
-//     void each(F kernel) const {
-//       SliceHolder<HostAoSoA, Types...> slice_holder(host_data);
-//       for (int i = 0; i < stored_length; i++) {
-//         LinearHandle<HostAoSoA, Types...> handle(slice_holder, i);
-//         kernel(handle);
-//       }
-//     }
-
-//     template <typename F>
-//     void par_each(F kernel) {
-//       LinearKernel<DeviceAoSoA, F, Types...> kernel_functor(device_data, kernel);
-//       Kokkos::RangePolicy<DeviceExecutionSpace> linear_policy(0, stored_length);
-//       Kokkos::parallel_for(linear_policy, kernel_functor, "par_each");
-//     }
-//   };
-// }
+      auto tuple = ToCabanaTuple<Types...>::to_cabana(cs...);
+      auto kernel = KOKKOS_LAMBDA(int i) { this->host_data.setTuple(i, tuple); };
+      Kokkos::RangePolicy<HostExecutionSpace> linear_policy(start, this->stored_length);
+      Kokkos::parallel_for(linear_policy, kernel, "fill");
+    }
+  };
+}
