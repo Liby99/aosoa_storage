@@ -20,6 +20,10 @@ namespace storage {
     KOKKOS_FUNCTION LinearHandle(const SliceHolder<AoSoA, Types...> &slice_holder, const std::size_t i)
         : slice_holder(slice_holder), i(i) {}
 
+    KOKKOS_INLINE_FUNCTION std::size_t index() const {
+      return i;
+    }
+
     template <int Index>
     KOKKOS_INLINE_FUNCTION TypeAt<Index> get() const {
       return TypeTransform<TypeAt<Index>>::get(slice_holder.template get<Index>(), i);
@@ -57,6 +61,11 @@ namespace storage {
     KOKKOS_FUNCTION
     JoinedLinearHandle(const SliceHolder &slice_holder, const Offset &offset, const std::size_t i)
         : slice_holder(slice_holder), offset(offset), i(i) {}
+
+    template <int StorageIndex>
+    KOKKOS_INLINE_FUNCTION std::size_t index() const {
+      return offset.template local_offset<StorageIndex>() + i;
+    }
 
     template <int StorageIndex, int FieldIndex>
     KOKKOS_INLINE_FUNCTION TypeAt<StorageIndex, FieldIndex> get() const {

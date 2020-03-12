@@ -66,7 +66,7 @@ namespace storage {
     std::size_t add(const Range &range) {
       ranges.push_back(range);
       if (ranges.size() > 1) {
-        std::size_t curr = ranges.size() - 1;
+        int curr = ranges.size() - 1;
         while (--curr >= 0 && range <= ranges[curr]) {
           std::swap(ranges[curr], ranges[curr + 1]);
         }
