@@ -75,7 +75,7 @@ namespace storage {
 
     void fill(const Types &... cs) {
       auto tuple = ToCabanaTuple<Types...>::to_cabana(cs...);
-      auto kernel = KOKKOS_LAMBDA(int i) {
+      auto kernel = KOKKOS_LAMBDA(std::size_t i) {
         host_data.setTuple(i, tuple);
       };
       Kokkos::RangePolicy<HostExecutionSpace> linear_policy(0, stored_length);
@@ -85,7 +85,7 @@ namespace storage {
     template <int Index>
     void fill(const TypeAt<Index> &c) {
       auto slice = Cabana::slice<Index>(host_data);
-      auto kernel = KOKKOS_LAMBDA(int i) {
+      auto kernel = KOKKOS_LAMBDA(std::size_t i) {
         TypeTransform<TypeAt<Index>>::set(slice, i, c);
       };
       Kokkos::RangePolicy<HostExecutionSpace> linear_policy(0, stored_length);
@@ -95,7 +95,7 @@ namespace storage {
     template <typename F>
     void each(F kernel) const {
       SliceHolder<HostAoSoA, Types...> slice_holder(host_data);
-      for (int i = 0; i < stored_length; i++) {
+      for (std::size_t i = 0; i < stored_length; i++) {
         LinearHandle<HostAoSoA, Types...> handle(slice_holder, i);
         kernel(handle);
       }

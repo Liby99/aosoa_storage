@@ -40,7 +40,7 @@ namespace storage {
       }
 
       auto tuple = ToCabanaTuple<Types...>::to_cabana(cs...);
-      auto kernel = KOKKOS_LAMBDA(int i) {
+      auto kernel = KOKKOS_LAMBDA(std::size_t i) {
         this->host_data.setTuple(i, tuple);
       };
       Kokkos::RangePolicy<HostExecutionSpace> linear_policy(start, this->stored_length);

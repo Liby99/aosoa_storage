@@ -15,7 +15,7 @@ namespace storage {
 
     LinearKernel(const AoSoA &data, F kernel) : slice_holder(data), kernel(kernel) {}
 
-    KOKKOS_INLINE_FUNCTION void operator()(const int i) const {
+    KOKKOS_INLINE_FUNCTION void operator()(const std::size_t i) const {
       Handle handle(slice_holder, i);
       kernel(handle);
     }
@@ -40,7 +40,7 @@ namespace storage {
     JoinedLinearKernel(const Base &base, const Range &range, F kernel)
         : slice_holder(base), offset(range, base), kernel(kernel) {}
 
-    KOKKOS_INLINE_FUNCTION void operator()(const int i) const {
+    KOKKOS_INLINE_FUNCTION void operator()(const std::size_t i) const {
       Handle handle(slice_holder, offset, i);
       kernel(handle);
     }

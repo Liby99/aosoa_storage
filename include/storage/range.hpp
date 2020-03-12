@@ -66,7 +66,7 @@ namespace storage {
     std::size_t add(const Range &range) {
       ranges.push_back(range);
       if (ranges.size() > 1) {
-        int curr = ranges.size() - 1;
+        std::size_t curr = ranges.size() - 1;
         while (--curr >= 0 && range <= ranges[curr]) {
           std::swap(ranges[curr], ranges[curr + 1]);
         }
@@ -134,7 +134,7 @@ namespace storage {
       }
 
       std::string result = "[";
-      for (int i = 0; i < ranges.size(); i++) {
+      for (std::size_t i = 0; i < ranges.size(); i++) {
         result += ranges[i].to_string();
         if (i != ranges.size() - 1) {
           result += ", ";
@@ -152,7 +152,7 @@ namespace storage {
     void add(std::size_t local, const Range &global) {
       std::size_t index = globals.add(global);
       std::size_t prev = local;
-      for (int i = index; i < locals.size(); i++) {
+      for (std::size_t i = index; i < locals.size(); i++) {
         std::swap(prev, locals[i]);
       }
       locals.push_back(prev);
@@ -163,7 +163,7 @@ namespace storage {
     }
 
     std::size_t to_local(std::size_t global) const {
-      for (int i = 0; i < locals.size(); i++) {
+      for (std::size_t i = 0; i < locals.size(); i++) {
         if (globals.ranges[i].contains(global)) {
           return locals[i] + global - globals.ranges[i].start;
         }
@@ -173,7 +173,7 @@ namespace storage {
 
     std::string to_string() const {
       std::string result = "[";
-      for (int i = 0; i < locals.size(); i++) {
+      for (std::size_t i = 0; i < locals.size(); i++) {
         result += "(" + std::to_string(locals[i]) + ", " + globals.ranges[i].to_string() + ")";
         if (i != locals.size() - 1) {
           result += ", ";

@@ -13,7 +13,7 @@ namespace storage {
     using To = T;
 
     template <typename Slice>
-    static KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const int i) {
+    static KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const std::size_t i) {
       return slice(i);
     }
 
@@ -23,7 +23,7 @@ namespace storage {
     }
 
     template <typename Slice>
-    static KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const int i, const From &c) {
+    static KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const std::size_t i, const From &c) {
       slice(i) = c;
     }
 
@@ -40,7 +40,7 @@ namespace storage {
     using To = T[2];
 
     template <typename Slice>
-    static KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const int i) {
+    static KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const std::size_t i) {
       return From(slice(i, 0), slice(i, 1));
     }
 
@@ -50,7 +50,7 @@ namespace storage {
     }
 
     template <typename Slice>
-    static KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const int i, const From &c) {
+    static KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const std::size_t i, const From &c) {
       slice(i, 0) = c.x;
       slice(i, 1) = c.y;
     }
@@ -69,7 +69,7 @@ namespace storage {
     using To = T[3];
 
     template <typename Slice>
-    static KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const int i) {
+    static KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const std::size_t i) {
       return From(slice(i, 0), slice(i, 1), slice(i, 2));
     }
 
@@ -80,7 +80,7 @@ namespace storage {
     }
 
     template <typename Slice>
-    static KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const int i, const From &c) {
+    static KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const std::size_t i, const From &c) {
       slice(i, 0) = c.x;
       slice(i, 1) = c.y;
       slice(i, 2) = c.z;

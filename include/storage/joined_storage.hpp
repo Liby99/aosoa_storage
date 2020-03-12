@@ -33,7 +33,7 @@ namespace storage {
       Ranges global_ranges = base.ranges();
       for (const Range &range : global_ranges) {
         Offset offset(range, base);
-        for (int i = 0; i < range.amount; i++) {
+        for (std::size_t i = 0; i < range.amount; i++) {
           HostHandle handle(host_slice_holder, offset, i);
           kernel(handle);
         }

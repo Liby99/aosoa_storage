@@ -17,13 +17,13 @@ namespace storage {
   template <int Index, class SliceHolder, typename... Types>
   struct UpdatorImpl {
     static KOKKOS_INLINE_FUNCTION void
-    update(const SliceHolder &slice_holder, const int i, const Types &... components) {}
+    update(const SliceHolder &slice_holder, const std::size_t i, const Types &... components) {}
   };
 
   template <int Index, class SliceHolder, typename T, typename... Types>
   struct UpdatorImpl<Index, SliceHolder, T, Types...> {
     static KOKKOS_INLINE_FUNCTION void
-    update(const SliceHolder &slice_holder, const int i, const T &c, const Types &... components) {
+    update(const SliceHolder &slice_holder, const std::size_t i, const T &c, const Types &... components) {
       TypeTransform<T>::set(slice_holder.template get<Index>(), i, c);
       UpdatorImpl<Index + 1, SliceHolder, Types...>::update(slice_holder, i, components...);
     }
