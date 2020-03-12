@@ -4,10 +4,10 @@
 using namespace storage;
 using namespace math;
 
-using Particles = FullStorage<Config, Vector3f, Vector3f, float>;
-using Stresses = FullStorage<Config, Vector3f, Vector3f>;
-using Attr1 = RangedStorage<Config, Vector3f, float>;
-using Attr2 = RangedStorage<Config, float, int>;
+using Particles = FullStorage<Config, Vector3f, Vector3f, float>; // a b c
+using Stresses = FullStorage<Config, Vector3f, Vector3f>; // d e
+using Attr1 = RangedStorage<Config, Vector3f, float>; // f g
+using Attr2 = RangedStorage<Config, float, int>; // h i
 
 void run() {
   Particles particles;
@@ -25,16 +25,12 @@ void run() {
   Attr2 attr2;
   attr2.fill(r2, 5.0, 100);
 
-  auto j1 = particles.join(stresses);
-  std::cout << "j1 ranges: " << j1.ranges().to_string() << std::endl;
-
-  auto j2 = particles.join(attr1);
-  std::cout << "j2 ranges: " << j2.ranges().to_string() << std::endl;
-
-  auto j3 = particles.join(attr2);
-  std::cout << "j3 ranges: " << j3.ranges().to_string() << std::endl;
-
-  j1.each(3);
+  particles.join(stresses).each([](auto &handle) {
+    auto a = handle.template get<0, 0>();
+    auto e = handle.template get<1, 1>();
+    a += e;
+    handle.template set<0, 0>(a);
+  });
 }
 
 int main() {

@@ -14,6 +14,10 @@ namespace storage {
 
     using Offset = JoinedOffset<Base, Storages...>;
 
+    using HostHandle = JoinedLinearHandle<HostAoSoAExtractor, Storages...>;
+
+    using DeviceHandle = JoinedLinearHandle<DeviceAoSoAExtractor, Storages...>;
+
     Base base;
 
     HostSliceHolder host_slice_holder;
@@ -35,7 +39,8 @@ namespace storage {
       for (auto &range : global_ranges) {
         Offset offset(range, base);
         for (int i = 0; i < range.amount; i++) {
-
+          HostHandle handle(host_slice_holder, offset, i);
+          kernel(handle);
         }
       }
     }
