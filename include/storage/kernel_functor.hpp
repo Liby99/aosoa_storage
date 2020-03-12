@@ -2,6 +2,7 @@
 
 #include "./handle.hpp"
 #include "./utils.hpp"
+#include "./range.hpp"
 
 namespace storage {
   template <class AoSoA, class F, typename... Types>
@@ -32,12 +33,12 @@ namespace storage {
 
     SliceHolder slice_holder;
 
-    const Offset &offset;
+    Offset offset;
 
     F kernel;
 
-    JoinedLinearKernel(const Base &base, const Offset &offset, F kernel)
-        : slice_holder(base), offset(offset), kernel(kernel) {}
+    JoinedLinearKernel(const Base &base, const Range &range, F kernel)
+        : slice_holder(base), offset(range, base), kernel(kernel) {}
 
     KOKKOS_INLINE_FUNCTION void operator()(const int i) const {
       Handle handle(slice_holder, offset, i);

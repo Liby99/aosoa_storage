@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstddef>
+#include <utility>
+
 template <typename IteratorType>
 struct IteratorRange {
   IteratorType begin_it, end_it;

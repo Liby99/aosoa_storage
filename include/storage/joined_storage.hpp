@@ -2,6 +2,7 @@
 
 #include "./range.hpp"
 #include "./utils.hpp"
+#include "./kernel_functor.hpp"
 
 namespace storage {
   template <typename Config, typename... Storages>
@@ -44,8 +45,7 @@ namespace storage {
       using KernelFunctor = JoinedLinearKernel<DeviceAoSoAExtractor, F, Storages...>;
       Ranges global_ranges = base.ranges();
       for (const Range &range : global_ranges) {
-        Offset offset(range, base);
-        KernelFunctor kernel_functor(base, offset, kernel);
+        KernelFunctor kernel_functor(base, range, kernel);
         Kokkos::RangePolicy<DeviceExecutionSpace> linear_policy(0, range.amount);
         Kokkos::parallel_for(linear_policy, kernel_functor, "par_each");
       }
