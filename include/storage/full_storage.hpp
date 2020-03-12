@@ -24,6 +24,12 @@ namespace storage {
 
     FullStorage(std::size_t capacity) : Super(capacity) {}
 
+    RangesMap ranges() const {
+      RangesMap map;
+      map.add(0, Range(0, this->stored_length));
+      return map;
+    }
+
     template <int Index>
     inline void fill(const typename Super::template TypeAt<Index> &c) {
       Super::template fill<Index>(c);
