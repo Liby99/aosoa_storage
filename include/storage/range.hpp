@@ -49,7 +49,20 @@ namespace storage {
   };
 
   struct Ranges {
+    bool is_infinity;
     std::vector<Range> ranges;
+
+    Ranges() : is_infinity(false) {}
+
+    Ranges(bool is_infinity) : is_infinity(is_infinity) {}
+
+    inline Range &operator[] (std::size_t i) {
+      return ranges[i];
+    }
+
+    inline const Range &operator[] (std::size_t i) const {
+      return ranges[i];
+    }
 
     std::size_t add(const Range &range) {
       ranges.push_back(range);
@@ -64,15 +77,15 @@ namespace storage {
       }
     }
 
-    std::size_t add(std::size_t start, std::size_t amount) {
+    inline std::size_t add(std::size_t start, std::size_t amount) {
       return add(Range(start, amount));
     }
 
-    auto begin() const {
+    inline auto begin() const {
       return ranges.begin();
     }
 
-    auto end() const {
+    inline auto end() const {
       return ranges.end();
     }
 
@@ -84,6 +97,16 @@ namespace storage {
     }
 
     Ranges intersect(const Ranges &other) const {
+
+      // Make infinity a special case
+      if (is_infinity) {
+        return other;
+      }
+      if (other.is_infinity) {
+        return *this;
+      }
+
+      // Calculate result afterwards
       Ranges result;
       std::size_t i = 0, j = 0;
       while (i < ranges.size() && j < other.ranges.size()) {
@@ -106,6 +129,10 @@ namespace storage {
     }
 
     std::string to_string() const {
+      if (is_infinity) {
+        return "inf";
+      }
+
       std::string result = "[";
       for (int i = 0; i < ranges.size(); i++) {
         result += ranges[i].to_string();
@@ -131,7 +158,7 @@ namespace storage {
       locals.push_back(prev);
     }
 
-    void add(std::size_t local, std::size_t global, std::size_t amount) {
+    inline void add(std::size_t local, std::size_t global, std::size_t amount) {
       add(local, Range(global, amount));
     }
 

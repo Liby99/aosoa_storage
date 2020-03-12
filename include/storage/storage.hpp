@@ -43,6 +43,8 @@ namespace storage {
 
     RangesMap ranges_map;
 
+    static const std::size_t N = sizeof...(Types);
+
     static const std::size_t DEFAULT_CAPACITY = 1024;
 
     Storage() : Storage(DEFAULT_CAPACITY) {}

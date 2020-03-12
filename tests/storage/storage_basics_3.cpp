@@ -22,7 +22,7 @@ void run() {
     positions.push_back(Vector3f(random<float>(), random<float>(), random<float>()));
   }
 
-  xvm.fill_with_iter(positions, [](auto pos, typename XVM::HostHandle &handle) {
+  xvm.fill_iter(positions, [](auto pos, typename XVM::HostHandle &handle) {
     handle.template set<0>(pos);
   });
 

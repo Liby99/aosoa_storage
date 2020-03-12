@@ -18,7 +18,9 @@ namespace storage {
 
     using DeviceHandle = typename Super::DeviceHandle;
 
-    FullStorage() : Super() {}
+    FullStorage() : Super() {
+      this->ranges_map.add(0, 0, 0);
+    }
 
     FullStorage(std::size_t capacity) : Super(capacity) {
       this->ranges_map.add(0, 0, 0);
@@ -42,11 +44,12 @@ namespace storage {
       Kokkos::RangePolicy<HostExecutionSpace> linear_policy(start, this->stored_length);
       Kokkos::parallel_for(linear_policy, kernel, "fill");
 
-      return Range{start, amount};
+      update_ranges_map();
+      return Range(start, amount);
     }
 
     template <typename Iter, typename F>
-    Range fill_with_iter(Iter iter, F callback) {
+    Range fill_iter(Iter iter, F callback) {
       std::size_t start = this->stored_length;
 
       std::size_t amount = iter.size();
@@ -60,7 +63,9 @@ namespace storage {
         LinearHandle<HostAoSoA, Types...> handle(slice_holder, start++);
         callback(data, handle);
       }
-      return Range{start, this->stored_length};
+
+      update_ranges_map();
+      return Range(start, amount);
     }
 
   private:

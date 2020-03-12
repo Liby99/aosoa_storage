@@ -16,7 +16,7 @@ int main() {
   Attr2 attr2;
 
   auto iter_1 = GridIterator<3>::range(10, 10, 10);
-  auto r1 = xvm.fill_with_iter(iter_1, [](Vector<int, 3> node, typename XVM::HostHandle &handle) {
+  auto r1 = xvm.fill_iter(iter_1, [](Vector<int, 3> node, typename XVM::HostHandle &handle) {
     handle.template set<0>(node.template cast<float>());
   });
 
@@ -24,7 +24,7 @@ int main() {
 
   auto iter_2 = GridIterator<3>::range(10, 10, 10);
   auto offset = Vector3f(20, 0, 0);
-  auto r2 = xvm.fill_with_iter(iter_2, [&](Vector<int, 3> node, typename XVM::HostHandle &handle) {
+  auto r2 = xvm.fill_iter(iter_2, [&](Vector<int, 3> node, typename XVM::HostHandle &handle) {
     handle.template set<0>(node.template cast<float>() + offset);
   });
 
