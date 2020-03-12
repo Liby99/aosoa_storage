@@ -51,19 +51,21 @@ namespace storage {
   struct Ranges {
     std::vector<Range> ranges;
 
-    void add(const Range &range) {
+    std::size_t add(const Range &range) {
       ranges.push_back(range);
       if (ranges.size() > 1) {
-        int curr = ranges.size() - 2;
-        while (curr >= 0 && range <= ranges[curr]) {
+        int curr = ranges.size() - 1;
+        while (--curr >= 0 && range <= ranges[curr]) {
           std::swap(ranges[curr], ranges[curr + 1]);
-          curr--;
         }
+        return curr + 1;
+      } else {
+        return 0;
       }
     }
 
-    void add(std::size_t start, std::size_t amount) {
-      add(Range(start, amount));
+    std::size_t add(std::size_t start, std::size_t amount) {
+      return add(Range(start, amount));
     }
 
     auto begin() const {
@@ -121,8 +123,37 @@ namespace storage {
     std::vector<std::size_t> locals;
 
     void add(std::size_t local, const Range &global) {
-      locals.push_back(local);
-      globals.add(global);
+      std::size_t index = globals.add(global);
+      std::size_t prev = local;
+      for (int i = index; i < locals.size(); i++) {
+        std::swap(prev, locals[i]);
+      }
+      locals.push_back(prev);
+    }
+
+    void add(std::size_t local, std::size_t global, std::size_t amount) {
+      add(local, Range(global, amount));
+    }
+
+    std::size_t to_local(std::size_t global) const {
+      for (int i = 0; i < locals.size(); i++) {
+        if (globals.ranges[i].contains(global)) {
+          return locals[i] + global - globals.ranges[i].start;
+        }
+      }
+      return (std::size_t) -1;
+    }
+
+    std::string to_string() const {
+      std::string result = "[";
+      for (int i = 0; i < locals.size(); i++) {
+        result += "(" + std::to_string(locals[i]) + ", " + globals.ranges[i].to_string() + ")";
+        if (i != locals.size() - 1) {
+          result += ", ";
+        }
+      }
+      result += "]";
+      return result;
     }
   };
 }

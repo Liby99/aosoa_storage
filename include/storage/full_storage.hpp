@@ -18,16 +18,10 @@ namespace storage {
 
     using DeviceHandle = typename Super::DeviceHandle;
 
-    static const bool is_full_storage = true;
-
     FullStorage() : Super() {}
 
-    FullStorage(std::size_t capacity) : Super(capacity) {}
-
-    RangesMap ranges() const {
-      RangesMap map;
-      map.add(0, Range(0, this->stored_length));
-      return map;
+    FullStorage(std::size_t capacity) : Super(capacity) {
+      this->ranges_map.add(0, 0, 0);
     }
 
     template <int Index>
@@ -67,6 +61,11 @@ namespace storage {
         callback(data, handle);
       }
       return Range{start, this->stored_length};
+    }
+
+  private:
+    void update_ranges_map() {
+      this->ranges_map.globals[0].amount = this->stored_length;
     }
   };
 }

@@ -72,7 +72,19 @@ void test_2() {
   }
 }
 
+void test_3() {
+  RangesMap ranges_map;
+
+  ranges_map.add(30, 200, 100);
+  ranges_map.add(0, 30, 30);
+
+  std::cout << ranges_map.to_string() << std::endl;
+
+  std::cout << ranges_map.to_local(1000) << std::endl;
+}
+
 int main() {
   test_1();
   test_2();
+  test_3();
 }

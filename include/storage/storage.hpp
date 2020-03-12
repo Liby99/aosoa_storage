@@ -4,10 +4,14 @@
 #include "./slice_holder.hpp"
 #include "./handle.hpp"
 #include "./kernel_functor.hpp"
+#include "./range.hpp"
+#include "./joined_storage.hpp"
 
 namespace storage {
   template <class Config, typename... Types>
   struct Storage {
+    using Self = Storage<Config, Types...>;
+
     using DeviceExecutionSpace = typename Config::DeviceExecutionSpace;
 
     using HostExecutionSpace = typename Config::HostExecutionSpace;
@@ -37,6 +41,8 @@ namespace storage {
 
     HostAoSoA host_data;
 
+    RangesMap ranges_map;
+
     static const std::size_t DEFAULT_CAPACITY = 1024;
 
     Storage() : Storage(DEFAULT_CAPACITY) {}
@@ -59,6 +65,10 @@ namespace storage {
 
     std::size_t size() const {
       return stored_length;
+    }
+
+    const RangesMap &ranges() const {
+      return ranges_map;
     }
 
     void fill(const Types &... cs) {
@@ -92,6 +102,11 @@ namespace storage {
       LinearKernel<DeviceAoSoA, F, Types...> kernel_functor(device_data, kernel);
       Kokkos::RangePolicy<DeviceExecutionSpace> linear_policy(0, stored_length);
       Kokkos::parallel_for(linear_policy, kernel_functor, "par_each");
+    }
+
+    template <typename... Storages>
+    JoinedStorage<Config, Self, Storages...> join(const Storages &... storages) {
+      return JoinedStorage<Config, Self, Storages...>(*this, storages...);
     }
   };
 }

@@ -18,10 +18,6 @@ namespace storage {
 
     using DeviceHandle = typename Super::DeviceHandle;
 
-    static const bool is_full_storage = false;
-
-    RangesMap ranges_map;
-
     RangedStorage() : Super() {}
 
     RangedStorage(std::size_t capacity) : Super(capacity) {}
@@ -33,7 +29,7 @@ namespace storage {
 
     void fill(const Range &range, const Types &... cs) {
       std::size_t start = this->stored_length;
-      ranges_map.add(start, range);
+      this->ranges_map.add(start, range);
 
       this->stored_length += range.amount;
       if (this->stored_length > this->host_data.size()) {
