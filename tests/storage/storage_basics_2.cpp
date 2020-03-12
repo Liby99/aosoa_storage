@@ -1,7 +1,6 @@
 #include <storage/prelude.hpp>
 #include <math/prelude.hpp>
-#include "../common/config.hpp"
-#include "../common/utils/grid_iterator.hpp"
+#include "../common/grid_iterator.hpp"
 
 using namespace storage;
 using namespace math;

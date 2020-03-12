@@ -1,4 +1,3 @@
-#include "../common/config.hpp"
 #include <assert.h>
 #include <iostream>
 #include <math/prelude.hpp>
