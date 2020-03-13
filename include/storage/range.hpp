@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstddef>
+#include <vector>
+
 namespace storage {
   struct Range {
     std::size_t start, amount;

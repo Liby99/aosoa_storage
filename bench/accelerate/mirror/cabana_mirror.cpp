@@ -1,6 +1,6 @@
 #include "../../common/config.hpp"
 
-using particle_fields = Cabana::MemberTypes<float[3], float[3], int>;
+using particle_fields = Cabana::MemberTypes<float[3], float[3], float>;
 using attr_fields = Cabana::MemberTypes<float[3]>;
 using particle_list = Cabana::AoSoA<particle_fields, KokkosDevice>;
 using attr_list = Cabana::AoSoA<attr_fields, KokkosDevice>;
