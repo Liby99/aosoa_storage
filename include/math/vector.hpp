@@ -26,11 +26,19 @@ namespace math {
       return data[i];
     }
 
-    KOKKOS_INLINE_FUNCTION Vector<T, 2> operator+(Vector<T, 2> other) const {
+    KOKKOS_INLINE_FUNCTION T &operator()(int i) {
+      return data[i];
+    }
+
+    KOKKOS_INLINE_FUNCTION T &operator[](int i) {
+      return data[i];
+    }
+
+    KOKKOS_INLINE_FUNCTION Vector<T, 2> operator+(const Vector<T, 2> &other) const {
       return Vector<T, 2>(x + other.x, y + other.y);
     }
 
-    KOKKOS_INLINE_FUNCTION Vector<T, 2> operator-(Vector<T, 2> other) const {
+    KOKKOS_INLINE_FUNCTION Vector<T, 2> operator-(const Vector<T, 2> &other) const {
       return Vector<T, 2>(x - other.x, y - other.y);
     }
 
@@ -42,16 +50,16 @@ namespace math {
       return Vector<T, 2>(x / other, y / other);
     }
 
-    KOKKOS_INLINE_FUNCTION T dot(Vector<T, 2> other) const {
+    KOKKOS_INLINE_FUNCTION T dot(const Vector<T, 2> &other) const {
       return x * other.x + y * other.y;
     }
 
-    KOKKOS_INLINE_FUNCTION void operator+=(Vector<T, 2> other) {
+    KOKKOS_INLINE_FUNCTION void operator+=(const Vector<T, 2> &other) {
       x += other.x;
       y += other.y;
     }
 
-    KOKKOS_INLINE_FUNCTION void operator-=(Vector<T, 2> other) {
+    KOKKOS_INLINE_FUNCTION void operator-=(const Vector<T, 2> &other) {
       x -= other.x;
       y -= other.y;
     }
@@ -91,6 +99,14 @@ namespace math {
       return data[i];
     }
 
+    KOKKOS_INLINE_FUNCTION T &operator()(int i) {
+      return data[i];
+    }
+
+    KOKKOS_INLINE_FUNCTION T &operator[](int i) {
+      return data[i];
+    }
+
     KOKKOS_INLINE_FUNCTION Vector<T, 3> operator+(const Vector<T, 3> &other) const {
       return Vector<T, 3>(x + other.x, y + other.y, z + other.z);
     }
@@ -99,11 +115,11 @@ namespace math {
       return Vector<T, 3>(x - other.x, y - other.y, z - other.z);
     }
 
-    KOKKOS_INLINE_FUNCTION Vector<T, 3> operator*(const T other) const {
+    KOKKOS_INLINE_FUNCTION Vector<T, 3> operator*(T other) const {
       return Vector<T, 3>(x * other, y * other, z * other);
     }
 
-    KOKKOS_INLINE_FUNCTION Vector<T, 3> operator/(const T other) const {
+    KOKKOS_INLINE_FUNCTION Vector<T, 3> operator/(T other) const {
       return Vector<T, 3>(x / other, y / other, z / other);
     }
 

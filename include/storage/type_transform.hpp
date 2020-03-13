@@ -33,64 +33,100 @@ namespace storage {
     }
   };
 
-  template <class T>
-  struct TypeTransform<math::Vector<T, 2>> {
-    using From = math::Vector<T, 2>;
+  template <class T, int D>
+  struct TypeTransform<math::Vector<T, D>> {
+    using From = math::Vector<T, D>;
 
-    using To = T[2];
+    using To = T[D];
 
     template <typename Slice>
     static KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const std::size_t i) {
-      return From(slice(i, 0), slice(i, 1));
+      From v;
+      #pragma unroll (D)
+      for (int j = 0; j < D; j++) {
+        v(j) = slice(i, j);
+      }
+      return v;
     }
 
     template <int Index, typename Tuple>
     static KOKKOS_INLINE_FUNCTION From get(Tuple &tuple) {
-      return From(Cabana::get<Index>(tuple, 0), Cabana::get<Index>(tuple, 1));
+      From v;
+      #pragma unroll (D)
+      for (int j = 0; j < D; j++) {
+        v(j) = Cabana::get<Index>(tuple, j);
+      }
+      return v;
     }
 
     template <typename Slice>
     static KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const std::size_t i, const From &c) {
-      slice(i, 0) = c.x;
-      slice(i, 1) = c.y;
+      #pragma unroll (D)
+      for (int j = 0; j < D; j++) {
+        slice(i, j) = c(j);
+      }
     }
 
     template <int Index, typename Tuple>
     static KOKKOS_INLINE_FUNCTION void set(Tuple &tuple, const From &c) {
-      Cabana::get<Index>(tuple, 0) = c.x;
-      Cabana::get<Index>(tuple, 1) = c.y;
+      #pragma unroll (D)
+      for (int j = 0; j < D; j++) {
+        Cabana::get<Index>(tuple, j) = c(j);
+      }
     }
   };
 
-  template <class T>
-  struct TypeTransform<math::Vector<T, 3>> {
-    using From = math::Vector<T, 3>;
+  template <class T, int D>
+  struct TypeTransform<math::Matrix<T, D>> {
+    using From = math::Matrix<T, D>;
 
-    using To = T[3];
+    using To = T[D][D];
 
     template <typename Slice>
     static KOKKOS_INLINE_FUNCTION From get(const Slice &slice, const std::size_t i) {
-      return From(slice(i, 0), slice(i, 1), slice(i, 2));
+      From v;
+      #pragma unroll (D)
+      for (int j = 0; j < D; j++) {
+        #pragma unroll (D)
+        for (int k = 0; k < D; k++) {
+          v(j, k) = slice(i, j, k);
+        }
+      }
+      return v;
     }
 
     template <int Index, typename Tuple>
     static KOKKOS_INLINE_FUNCTION From get(Tuple &tuple) {
-      return From(Cabana::get<Index>(tuple, 0), Cabana::get<Index>(tuple, 1),
-                  Cabana::get<Index>(tuple, 2));
+      From v;
+      #pragma unroll (D)
+      for (int j = 0; j < D; j++) {
+        #pragma unroll (D)
+        for (int k = 0; k < D; k++) {
+          v(j, k) = Cabana::get<Index>(tuple, j, k);
+        }
+      }
     }
 
     template <typename Slice>
     static KOKKOS_INLINE_FUNCTION void set(const Slice &slice, const std::size_t i, const From &c) {
-      slice(i, 0) = c.x;
-      slice(i, 1) = c.y;
-      slice(i, 2) = c.z;
+      #pragma unroll (D)
+      for (int j = 0; j < D; j++) {
+        #pragma unroll (D)
+        for (int k = 0; k < D; k++) {
+          slice(i, j, k) = c(j, k);
+        }
+      }
     }
 
     template <int Index, typename Tuple>
     static KOKKOS_INLINE_FUNCTION void set(Tuple &tuple, const From &c) {
-      Cabana::get<Index>(tuple, 0) = c.x;
-      Cabana::get<Index>(tuple, 1) = c.y;
-      Cabana::get<Index>(tuple, 2) = c.z;
+      #pragma unroll (D)
+      for (int j = 0; j < D; j++) {
+        #pragma unroll (D)
+        for (int k = 0; k < D; k++) {
+          Cabana::get<Index>(tuple, j, k) = c(j, k);
+        }
+      }
     }
   };
 } // namespace storage
